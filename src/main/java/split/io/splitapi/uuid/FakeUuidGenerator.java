@@ -2,7 +2,7 @@ package split.io.splitapi.uuid;
 
 public class FakeUuidGenerator implements UuidGenerator {
 
-     String uuid = "fake-uuid-123";
+     String uuid = "fake-uuid";
 
     @Override
     public String generate() {

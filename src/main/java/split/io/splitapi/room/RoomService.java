@@ -1,7 +1,9 @@
 package split.io.splitapi.room;
 
 import lombok.RequiredArgsConstructor;
+import split.io.splitapi.room.models.*;
 import split.io.splitapi.uuid.UuidGenerator;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 public class RoomService {
@@ -12,8 +14,31 @@ public class RoomService {
 
     public CreateRoomResponse create(CreateRoomRequest request) {
         String id = uuidGenerator.generate();
-        Room room = new Room(id, request.name());
+        Room room = new Room(id, request.name(), new ArrayList<>());
         roomRepository.create(room);
         return roomPresenter.toCreateRoomResponse(room);
+    }
+
+    public FetchRoomResponse fetch(String id) {
+        Room room = roomRepository.fetch(id);
+        return roomPresenter.toFetchRoomResponse(room);
+    }
+
+    public AddPayerResponse addPayer(AddPayerRequest request ) {
+        String payerId = uuidGenerator.generate();
+        Payer payer = new Payer(payerId, request.payerName(), new ArrayList<>());
+        roomRepository.addPayer(request.roomId(), payer);
+        return roomPresenter.toAddPayerResponse(payer);
+    }
+
+    public AddExpenseResponse addExpense(AddExpenseRequest request ) {
+        String expenseId = uuidGenerator.generate();
+        Expense expense = new Expense(expenseId, request.expenseDescription(), request.expenseAmount());
+        roomRepository.addExpense(request.payerId(), expense);
+        return roomPresenter.toAddExpenseResponse(expense);
+    }
+
+    public void deleteExpense(String id) {
+        roomRepository.deleteExpense(id);
     }
 }

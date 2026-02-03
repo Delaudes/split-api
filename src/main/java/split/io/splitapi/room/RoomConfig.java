@@ -2,6 +2,7 @@ package split.io.splitapi.room;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import split.io.splitapi.room.adapters.FakeRoomAdapter;
 import split.io.splitapi.uuid.UuidGenerator;
 
 @Configuration
