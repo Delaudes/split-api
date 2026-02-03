@@ -1,5 +1,10 @@
 package split.io.splitapi.room.models;
 
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public record AddExpenseRequest(String payerId, String expenseDescription, BigDecimal expenseAmount) {}
+public record AddExpenseRequest(
+        @NotNull String payerId,
+        @NotNull String expenseDescription,
+        @NotNull BigDecimal expenseAmount
+) {}

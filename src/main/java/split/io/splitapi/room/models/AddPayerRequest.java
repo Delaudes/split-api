@@ -1,3 +1,8 @@
 package split.io.splitapi.room.models;
 
-public record AddPayerRequest(String roomId, String payerName) {}
+import jakarta.validation.constraints.NotNull;
+
+public record AddPayerRequest(
+        @NotNull String roomId,
+        @NotNull String payerName
+) {}

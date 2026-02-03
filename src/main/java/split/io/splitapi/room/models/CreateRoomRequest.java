@@ -1,3 +1,7 @@
 package split.io.splitapi.room.models;
 
-public record CreateRoomRequest(String name) {}
+import jakarta.validation.constraints.NotNull;
+
+public record CreateRoomRequest(
+        @NotNull String name
+) {}
