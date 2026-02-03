@@ -32,12 +32,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(429);
+            response.getWriter().write("Too Many Requests");
         }
     }
 
     private Bucket createBucket() {
         return Bucket.builder()
-                .addLimit(Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofSeconds(1)).build())
+                .addLimit(Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofMinutes(1)).build())
                 .build();
     }
 }
