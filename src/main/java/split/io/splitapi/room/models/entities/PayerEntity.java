@@ -2,6 +2,7 @@ package split.io.splitapi.room.models.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class PayerEntity {
     @Column(name = "room_id")
     private String roomId;
 
+    @Setter
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "payer_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<ExpenseEntity> expenses = new ArrayList<>();

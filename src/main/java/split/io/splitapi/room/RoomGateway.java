@@ -4,7 +4,7 @@ import split.io.splitapi.room.models.Expense;
 import split.io.splitapi.room.models.Payer;
 import split.io.splitapi.room.models.Room;
 
-public interface RoomRepository {
+public interface RoomGateway {
 
     void create(Room room);
     Room fetch(String id);
