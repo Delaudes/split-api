@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RoomServiceTest {
+class RoomServiceTests {
 
     private RoomService roomService;
     private FakeRoomAdapter fakeRoomAdapter;

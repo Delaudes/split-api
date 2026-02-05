@@ -1,7 +1,10 @@
 package split.io.splitapi.room.adapters;
 
 import org.springframework.stereotype.Component;
-import split.io.splitapi.room.RoomRepository;
+import split.io.splitapi.room.RoomGateway;
+import split.io.splitapi.room.dao.ExpenseRepository;
+import split.io.splitapi.room.dao.PayerRepository;
+import split.io.splitapi.room.dao.RoomRepository;
 import split.io.splitapi.room.models.Expense;
 import split.io.splitapi.room.models.Payer;
 import split.io.splitapi.room.models.Room;
@@ -13,16 +16,16 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
-public class JpaRoomAdapter implements RoomRepository {
+public class JpaRoomAdapter implements RoomGateway {
 
-    private final JpaRoomEntityRepository roomEntityRepository;
-    private final JpaPayerEntityRepository payerEntityRepository;
-    private final JpaExpenseEntityRepository expenseEntityRepository;
+    private final RoomRepository roomEntityRepository;
+    private final PayerRepository payerEntityRepository;
+    private final ExpenseRepository expenseEntityRepository;
 
     public JpaRoomAdapter(
-            JpaRoomEntityRepository roomEntityRepository,
-            JpaPayerEntityRepository payerEntityRepository,
-            JpaExpenseEntityRepository expenseEntityRepository
+            RoomRepository roomEntityRepository,
+            PayerRepository payerEntityRepository,
+            ExpenseRepository expenseEntityRepository
     ) {
         this.roomEntityRepository = roomEntityRepository;
         this.payerEntityRepository = payerEntityRepository;
@@ -64,7 +67,6 @@ public class JpaRoomAdapter implements RoomRepository {
         expenseEntityRepository.deleteById(id);
     }
 
-    // Mapping Entity -> Domain Model
     private Room mapToRoom(RoomEntity roomEntity) {
         ArrayList<Payer> payers = roomEntity.getPayers().stream()
                 .map(this::mapToPayer)

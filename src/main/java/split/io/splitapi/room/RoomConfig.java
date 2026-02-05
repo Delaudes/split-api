@@ -7,16 +7,15 @@ import split.io.splitapi.uuid.UuidGenerator;
 @Configuration
 public class RoomConfig {
 
-
     @Bean
     public RoomPresenter roomPresenter() {
         return new RoomPresenter();
     }
 
     @Bean
-    public RoomService roomService(RoomRepository repository,
-                                    RoomPresenter presenter,
-                                    UuidGenerator uuidGenerator) {
+    public RoomService roomService(RoomGateway repository,
+                                   RoomPresenter presenter,
+                                   UuidGenerator uuidGenerator) {
         return new RoomService(repository, presenter, uuidGenerator);
     }
 }
