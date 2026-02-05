@@ -5,6 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.room.adapters.FakeRoomAdapter;
 import split.io.splitapi.room.models.*;
+import split.io.splitapi.room.models.inputs.AddExpenseRequest;
+import split.io.splitapi.room.models.inputs.AddPayerRequest;
+import split.io.splitapi.room.models.inputs.CreateRoomRequest;
+import split.io.splitapi.room.models.outputs.*;
 import split.io.splitapi.uuid.FakeUuidGenerator;
 
 import java.math.BigDecimal;

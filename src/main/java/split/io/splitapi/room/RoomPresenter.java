@@ -1,6 +1,7 @@
 package split.io.splitapi.room;
 
 import split.io.splitapi.room.models.*;
+import split.io.splitapi.room.models.outputs.*;
 
 import java.util.List;
 
