@@ -1,7 +1,8 @@
 package split.io.splitapi.room.adapters;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import split.io.splitapi.room.RoomGateway;
+import split.io.splitapi.room.RoomPort;
 import split.io.splitapi.room.dao.ExpenseRepository;
 import split.io.splitapi.room.dao.PayerRepository;
 import split.io.splitapi.room.dao.RoomRepository;
@@ -16,21 +17,12 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
-public class JpaRoomAdapter implements RoomGateway {
+@RequiredArgsConstructor
+public class JpaRoomAdapter implements RoomPort {
 
     private final RoomRepository roomEntityRepository;
     private final PayerRepository payerEntityRepository;
     private final ExpenseRepository expenseEntityRepository;
-
-    public JpaRoomAdapter(
-            RoomRepository roomEntityRepository,
-            PayerRepository payerEntityRepository,
-            ExpenseRepository expenseEntityRepository
-    ) {
-        this.roomEntityRepository = roomEntityRepository;
-        this.payerEntityRepository = payerEntityRepository;
-        this.expenseEntityRepository = expenseEntityRepository;
-    }
 
     @Override
     public void create(Room room) {

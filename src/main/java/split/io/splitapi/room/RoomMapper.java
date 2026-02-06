@@ -1,11 +1,15 @@
 package split.io.splitapi.room;
 
 import split.io.splitapi.room.models.*;
+import split.io.splitapi.room.models.inputs.AddExpenseRequest;
+import split.io.splitapi.room.models.inputs.AddPayerRequest;
+import split.io.splitapi.room.models.inputs.CreateRoomRequest;
 import split.io.splitapi.room.models.outputs.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RoomPresenter {
+public class RoomMapper {
 
     public CreateRoomResponse toCreateRoomResponse(Room room) {
         return new CreateRoomResponse(room.id());
@@ -27,5 +31,17 @@ public class RoomPresenter {
 
     public AddExpenseResponse toAddExpenseResponse(Expense expense) {
         return new AddExpenseResponse(expense.id());
+    }
+
+    public Room toRoom(CreateRoomRequest request, String id) {
+        return new Room(id, request.name(), new ArrayList<>());
+    }
+
+    public Payer toPayer(AddPayerRequest request, String id) {
+        return new Payer(id, request.payerName(), new ArrayList<>());
+    }
+
+    public Expense toExpense(AddExpenseRequest request, String id) {
+        return new Expense(id, request.expenseDescription(), request.expenseAmount());
     }
 }
