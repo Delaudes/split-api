@@ -20,35 +20,35 @@ import split.io.splitapi.room.models.outputs.FetchRoomResponse;
 @Validated
 public class RoomController {
 
-    private final RoomService roomService;
+    private final RoomFacade roomFacade;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreateRoomResponse create(@Valid @RequestBody CreateRoomRequest request) {
-        return roomService.create(request);
+        return roomFacade.create(request);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public FetchRoomResponse fetch(@PathVariable @NotBlank String id) {
-        return roomService.fetch(id);
+        return roomFacade.fetch(id);
     }
 
     @PostMapping("/payers")
     @ResponseStatus(HttpStatus.CREATED)
     public AddPayerResponse addPayer(@Valid @RequestBody AddPayerRequest request ) {
-        return roomService.addPayer(request);
+        return roomFacade.addPayer(request);
     }
 
     @PostMapping("/payers/expenses")
     @ResponseStatus(HttpStatus.CREATED)
     public AddExpenseResponse addExpense(@Valid @RequestBody AddExpenseRequest request ) {
-        return roomService.addExpense(request);
+        return roomFacade.addExpense(request);
     }
 
     @DeleteMapping("payers/expenses/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExpense(@PathVariable @NotBlank String id) {
-        roomService.deleteExpense(id);
+        roomFacade.deleteExpense(id);
     }
 }

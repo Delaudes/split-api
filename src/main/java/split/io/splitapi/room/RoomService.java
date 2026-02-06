@@ -1,51 +1,32 @@
 package split.io.splitapi.room;
 
 import lombok.RequiredArgsConstructor;
-import split.io.splitapi.room.models.*;
-import split.io.splitapi.room.models.inputs.AddExpenseRequest;
-import split.io.splitapi.room.models.inputs.AddPayerRequest;
-import split.io.splitapi.room.models.inputs.CreateRoomRequest;
-import split.io.splitapi.room.models.outputs.AddExpenseResponse;
-import split.io.splitapi.room.models.outputs.AddPayerResponse;
-import split.io.splitapi.room.models.outputs.CreateRoomResponse;
-import split.io.splitapi.room.models.outputs.FetchRoomResponse;
-import split.io.splitapi.uuid.UuidGenerator;
-import java.util.ArrayList;
+import split.io.splitapi.room.models.Expense;
+import split.io.splitapi.room.models.Payer;
+import split.io.splitapi.room.models.Room;
 
 @RequiredArgsConstructor
 public class RoomService {
 
-    private final RoomGateway roomGateway;
-    private final RoomPresenter roomPresenter;
-    private final UuidGenerator uuidGenerator;
+    private final RoomPort roomPort;
 
-    public CreateRoomResponse create(CreateRoomRequest request) {
-        String id = uuidGenerator.generate();
-        Room room = new Room(id, request.name(), new ArrayList<>());
-        roomGateway.create(room);
-        return roomPresenter.toCreateRoomResponse(room);
+    public void createRoom(Room room) {
+        roomPort.create(room);
     }
 
-    public FetchRoomResponse fetch(String id) {
-        Room room = roomGateway.fetch(id);
-        return roomPresenter.toFetchRoomResponse(room);
+    public Room fetchRoom(String id) {
+        return roomPort.fetch(id);
     }
 
-    public AddPayerResponse addPayer(AddPayerRequest request ) {
-        String payerId = uuidGenerator.generate();
-        Payer payer = new Payer(payerId, request.payerName(), new ArrayList<>());
-        roomGateway.addPayer(request.roomId(), payer);
-        return roomPresenter.toAddPayerResponse(payer);
+    public void addPayer(String roomId, Payer payer) {
+        roomPort.addPayer(roomId, payer);
     }
 
-    public AddExpenseResponse addExpense(AddExpenseRequest request ) {
-        String expenseId = uuidGenerator.generate();
-        Expense expense = new Expense(expenseId, request.expenseDescription(), request.expenseAmount());
-        roomGateway.addExpense(request.payerId(), expense);
-        return roomPresenter.toAddExpenseResponse(expense);
+    public void addExpense(String payerId, Expense expense) {
+        roomPort.addExpense(payerId, expense);
     }
 
     public void deleteExpense(String id) {
-        roomGateway.deleteExpense(id);
+        roomPort.deleteExpense(id);
     }
 }

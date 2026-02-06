@@ -8,14 +8,19 @@ import split.io.splitapi.uuid.UuidGenerator;
 public class RoomConfig {
 
     @Bean
-    public RoomPresenter roomPresenter() {
-        return new RoomPresenter();
+    public RoomMapper roomPresenter() {
+        return new RoomMapper();
     }
 
     @Bean
-    public RoomService roomService(RoomGateway repository,
-                                   RoomPresenter presenter,
-                                   UuidGenerator uuidGenerator) {
-        return new RoomService(repository, presenter, uuidGenerator);
+    public RoomFacade roomFacade(RoomService service,
+                                  RoomMapper presenter,
+                                  UuidGenerator uuidGenerator) {
+        return new RoomFacade(service, presenter, uuidGenerator);
+    }
+
+    @Bean
+    public RoomService roomService(RoomPort roomPort) {
+        return new RoomService(roomPort);
     }
 }

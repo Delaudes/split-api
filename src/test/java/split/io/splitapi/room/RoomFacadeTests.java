@@ -16,9 +16,9 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RoomServiceTests {
+class RoomFacadeTests {
 
-    private RoomService roomService;
+    private RoomFacade roomFacade;
     private FakeRoomAdapter fakeRoomAdapter;
     private FakeUuidGenerator fakeUuidGenerator;
 
@@ -26,8 +26,9 @@ class RoomServiceTests {
     void setUp() {
         fakeRoomAdapter = new FakeRoomAdapter();
         fakeUuidGenerator = new FakeUuidGenerator();
-        RoomPresenter roomPresenter = new RoomPresenter();
-        roomService = new RoomService(fakeRoomAdapter, roomPresenter, fakeUuidGenerator);
+        RoomMapper roomMapper = new RoomMapper();
+        RoomService roomService = new RoomService(fakeRoomAdapter);
+        roomFacade = new RoomFacade(roomService, roomMapper, fakeUuidGenerator);
     }
 
     @Test
@@ -38,7 +39,7 @@ class RoomServiceTests {
         CreateRoomRequest request = new CreateRoomRequest(roomName);
 
         // When
-        CreateRoomResponse response = roomService.create(request);
+        CreateRoomResponse response = roomFacade.create(request);
 
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
@@ -53,7 +54,7 @@ class RoomServiceTests {
         FetchRoomResponse expectedRoom = createExpectedRoom(roomId);
 
         // When
-        FetchRoomResponse response = roomService.fetch(roomId);
+        FetchRoomResponse response = roomFacade.fetch(roomId);
 
         // Then
         assertEquals(roomId, fakeRoomAdapter.roomId);
@@ -69,7 +70,7 @@ class RoomServiceTests {
         Payer expectedPayer = new Payer(fakeUuidGenerator.uuid, payerName, new ArrayList<>());
 
         // When
-        AddPayerResponse response = roomService.addPayer(request);
+        AddPayerResponse response = roomFacade.addPayer(request);
 
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
@@ -88,7 +89,7 @@ class RoomServiceTests {
         Expense expectedExpense = new Expense(fakeUuidGenerator.uuid, expenseDescription, expenseAmount);
 
         // When
-        AddExpenseResponse response = roomService.addExpense(request);
+        AddExpenseResponse response = roomFacade.addExpense(request);
 
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
@@ -102,7 +103,7 @@ class RoomServiceTests {
         fakeRoomAdapter.room = createRoomWithExpense(expenseId);
 
         // When
-        roomService.deleteExpense(expenseId);
+        roomFacade.deleteExpense(expenseId);
 
         // Then
         assertTrue(fakeRoomAdapter.room.payers().getFirst().expenses().isEmpty());
