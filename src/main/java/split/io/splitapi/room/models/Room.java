@@ -22,4 +22,10 @@ public record Room(String id, String name, ArrayList<Payer> payers) {
             payer.deleteExpense(id);
         }
     }
+
+    public void deleteAllExpenses() {
+        for (Payer payer : payers) {
+            payer.deleteExpenses();
+        }
+    }
 }

@@ -11,4 +11,8 @@ public record Payer(String id, String name, ArrayList<Expense> expenses) {
     public void deleteExpense(String id) {
         expenses.removeIf(expense -> expense.id().equals(id));
     }
+
+    public void deleteExpenses() {
+        expenses.clear();
+    }
 }

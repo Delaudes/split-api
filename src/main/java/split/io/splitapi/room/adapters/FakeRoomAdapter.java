@@ -40,4 +40,10 @@ public class FakeRoomAdapter implements RoomPort {
     public void deleteExpense(String id) {
         this.room.deleteExpense(id);
     }
+
+    @Override
+    public void deleteAllExpenses(String roomId) {
+        this.roomId = roomId;
+        this.room.deleteAllExpenses();
+    }
 }

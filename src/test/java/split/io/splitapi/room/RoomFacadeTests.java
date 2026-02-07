@@ -109,6 +109,20 @@ class RoomFacadeTests {
         assertTrue(fakeRoomAdapter.room.payers().getFirst().expenses().isEmpty());
     }
 
+    @Test void shouldDeleteAllExpensesByRoomId() {
+        // Given
+        String roomId = "fake-room-id";
+        fakeRoomAdapter.room = createRoom(roomId);
+
+        // When
+        roomFacade.deleteAllExpenses(roomId);
+
+        // Then
+        for (Payer payer : fakeRoomAdapter.room.payers()) {
+            assertTrue(payer.expenses().isEmpty());
+        }
+    }
+
 
     private static @NonNull Room createRoom(String roomId) {
         Payer payer1 = new Payer("payer-1", "Alice", new ArrayList<>());

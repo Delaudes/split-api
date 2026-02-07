@@ -47,4 +47,8 @@ public class RoomFacade {
     public void deleteExpense(String id) {
         roomService.deleteExpense(id);
     }
+
+    public void deleteAllExpenses(String roomId) {
+        roomService.deleteAllExpenses(roomId);
+    }
 }
