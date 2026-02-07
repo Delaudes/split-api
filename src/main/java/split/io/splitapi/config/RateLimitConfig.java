@@ -1,4 +1,4 @@
-package split.io.splitapi.filter;
+package split.io.splitapi.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RateLimitFilter extends OncePerRequestFilter {
+public class RateLimitConfig extends OncePerRequestFilter {
 
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
