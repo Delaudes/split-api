@@ -29,4 +29,8 @@ public class RoomService {
     public void deleteExpense(String id) {
         roomPort.deleteExpense(id);
     }
+
+    public void deleteAllExpenses(String roomId) {
+        roomPort.deleteAllExpenses(roomId);
+    }
 }

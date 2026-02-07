@@ -46,9 +46,15 @@ public class RoomController {
         return roomFacade.addExpense(request);
     }
 
-    @DeleteMapping("payers/expenses/{id}")
+    @DeleteMapping("/payers/expenses/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExpense(@PathVariable @NotBlank String id) {
         roomFacade.deleteExpense(id);
+    }
+
+    @DeleteMapping("/{id}/payers/expenses")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAllExpenses(@PathVariable @NotBlank String id) {
+         roomFacade.deleteAllExpenses(id);
     }
 }
