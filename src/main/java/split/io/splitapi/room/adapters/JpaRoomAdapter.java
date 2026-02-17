@@ -64,6 +64,14 @@ public class JpaRoomAdapter implements RoomPort {
         expenseEntityRepository.deleteByRoomId(roomId);
     }
 
+    @Override
+    public void editRoomName(String id, String name) {
+        RoomEntity roomEntity = roomEntityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+        roomEntity.setName(name);
+        roomEntityRepository.save(roomEntity);
+    }
+
     private Room mapToRoom(RoomEntity roomEntity) {
         ArrayList<Payer> payers = roomEntity.getPayers().stream()
                 .map(this::mapToPayer)
@@ -87,6 +95,4 @@ public class JpaRoomAdapter implements RoomPort {
                 expenseEntity.getAmount()
         );
     }
-
-
 }

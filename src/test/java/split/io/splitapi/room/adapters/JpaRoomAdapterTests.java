@@ -114,14 +114,25 @@ class JpaRoomAdapterTests {
 
     @Test
     void shouldDeleteAllExpenses() {
-        // Given
-        fakeRoomRepository.roomToReturn = createRoomEntity(roomId);
-
         // When
         adapter.deleteAllExpenses(roomId);
 
         // Then
         assertEquals(roomId, fakeExpenseRepository.deletedByRoomId);
+    }
+
+    @Test
+    void shouldEditRoomName() {
+        // Given
+        String newName = "New Room Name";
+        fakeRoomRepository.roomToReturn = createRoomEntity(roomId);
+
+        // When
+        adapter.editRoomName(roomId, newName);
+
+        // Then
+        assertEquals(roomId, fakeRoomRepository.findByIdParam);
+        assertEquals(newName, fakeRoomRepository.savedRoom.getName());
     }
 
     private static @NonNull RoomEntity createRoomEntity(String roomId) {

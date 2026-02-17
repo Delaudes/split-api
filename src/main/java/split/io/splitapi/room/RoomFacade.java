@@ -5,6 +5,7 @@ import split.io.splitapi.room.models.*;
 import split.io.splitapi.room.models.inputs.AddExpenseRequest;
 import split.io.splitapi.room.models.inputs.AddPayerRequest;
 import split.io.splitapi.room.models.inputs.CreateRoomRequest;
+import split.io.splitapi.room.models.inputs.EditRoomRequest;
 import split.io.splitapi.room.models.outputs.AddExpenseResponse;
 import split.io.splitapi.room.models.outputs.AddPayerResponse;
 import split.io.splitapi.room.models.outputs.CreateRoomResponse;
@@ -50,5 +51,9 @@ public class RoomFacade {
 
     public void deleteAllExpenses(String roomId) {
         roomService.deleteAllExpenses(roomId);
+    }
+
+    public void editRoomName(String id, EditRoomRequest request) {
+        roomService.editRoomName(id, request.name());
     }
 }
