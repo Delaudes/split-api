@@ -15,6 +15,7 @@ public class RoomEntity {
     @Id
     private String id;
 
+    @Setter
     private String name;
 
     @Setter

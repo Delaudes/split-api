@@ -8,6 +8,7 @@ import split.io.splitapi.room.models.*;
 import split.io.splitapi.room.models.inputs.AddExpenseRequest;
 import split.io.splitapi.room.models.inputs.AddPayerRequest;
 import split.io.splitapi.room.models.inputs.CreateRoomRequest;
+import split.io.splitapi.room.models.inputs.EditRoomRequest;
 import split.io.splitapi.room.models.outputs.*;
 import split.io.splitapi.uuid.FakeUuidGenerator;
 
@@ -43,7 +44,7 @@ class RoomFacadeTests {
 
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
-        assertEquals(fakeRoomAdapter.room, expectedRoom);
+        assertEquals(expectedRoom, fakeRoomAdapter.room);
     }
 
     @Test
@@ -57,8 +58,8 @@ class RoomFacadeTests {
         FetchRoomResponse response = roomFacade.fetch(roomId);
 
         // Then
+        assertEquals(expectedRoom,response);
         assertEquals(roomId, fakeRoomAdapter.roomId);
-        assertEquals(response, expectedRoom);
     }
 
     @Test
@@ -75,14 +76,13 @@ class RoomFacadeTests {
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
         assertEquals(roomId, fakeRoomAdapter.roomId);
-        assertEquals(fakeRoomAdapter.room.payers().getFirst(), expectedPayer);
+        assertEquals(expectedPayer, fakeRoomAdapter.newPayer);
     }
 
     @Test
     void shouldAddExpenseToPayer() {
         // Given
         String payerId = "fake-payer-id";
-        fakeRoomAdapter.room = createRoomWithPayer(payerId);
         String expenseDescription = "fake-expense-description";
         BigDecimal expenseAmount = new BigDecimal("99.99");
         AddExpenseRequest request = new AddExpenseRequest(payerId, expenseDescription, expenseAmount);
@@ -93,36 +93,47 @@ class RoomFacadeTests {
 
         // Then
         assertEquals(fakeUuidGenerator.uuid, response.id());
-        assertEquals(fakeRoomAdapter.room.payers().getFirst().expenses().getFirst(), expectedExpense);
+        assertEquals(payerId, fakeRoomAdapter.payerId);
+        assertEquals(expectedExpense, fakeRoomAdapter.newExpense);
     }
 
     @Test
     void shouldDeleteExpenseById() {
         // Given
         String expenseId = "fake-expense-id";
-        fakeRoomAdapter.room = createRoomWithExpense(expenseId);
 
         // When
         roomFacade.deleteExpense(expenseId);
 
         // Then
-        assertTrue(fakeRoomAdapter.room.payers().getFirst().expenses().isEmpty());
+        assertEquals(expenseId, fakeRoomAdapter.expenseId);
     }
 
-    @Test void shouldDeleteAllExpensesByRoomId() {
+    @Test
+    void shouldDeleteAllExpensesByRoomId() {
         // Given
         String roomId = "fake-room-id";
-        fakeRoomAdapter.room = createRoom(roomId);
 
         // When
         roomFacade.deleteAllExpenses(roomId);
 
         // Then
-        for (Payer payer : fakeRoomAdapter.room.payers()) {
-            assertTrue(payer.expenses().isEmpty());
-        }
+        assertEquals(roomId, fakeRoomAdapter.roomId);
     }
 
+    @Test
+    void shouldEditRoomName() {
+        // Given
+        String roomId = "fake-room-id";
+        String newRoomName = "new-fake-room-name";
+
+        // When
+        roomFacade.editRoomName(roomId, new EditRoomRequest(newRoomName));
+
+        // Then
+        assertEquals(roomId, fakeRoomAdapter.roomId);
+        assertEquals(newRoomName, fakeRoomAdapter.newRoomName);
+    }
 
     private static @NonNull Room createRoom(String roomId) {
         Payer payer1 = new Payer("payer-1", "Alice", new ArrayList<>());
@@ -167,22 +178,6 @@ class RoomFacadeTests {
         room.payers().add(payer1);
         room.payers().add(payer2);
         room.payers().add(payer3);
-        return room;
-    }
-
-    private static @NonNull Room createRoomWithPayer(String payerId) {
-        Payer payer = new Payer(payerId, "fake-payer-name", new ArrayList<>());
-        Room room = new Room("fake-room-id", "fake-room-name", new ArrayList<>());
-        room.addPayer(payer);
-        return room;
-    }
-
-    private static @NonNull Room createRoomWithExpense(String expenseId) {
-        Expense expense = new Expense(expenseId, "fake-expense-description", new BigDecimal("99.99"));
-        Payer payer = new Payer("fake-payer-id", "fake-payer-name", new ArrayList<>());
-        payer.addExpense(expense);
-        Room room = new Room("fake-room-id", "fake-room-name", new ArrayList<>());
-        room.addPayer(payer);
         return room;
     }
 }

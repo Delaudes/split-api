@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import split.io.splitapi.room.models.inputs.AddExpenseRequest;
 import split.io.splitapi.room.models.inputs.AddPayerRequest;
 import split.io.splitapi.room.models.inputs.CreateRoomRequest;
+import split.io.splitapi.room.models.inputs.EditRoomRequest;
 import split.io.splitapi.room.models.outputs.AddExpenseResponse;
 import split.io.splitapi.room.models.outputs.AddPayerResponse;
 import split.io.splitapi.room.models.outputs.CreateRoomResponse;
@@ -57,4 +58,12 @@ public class RoomController {
     public void deleteAllExpenses(@PathVariable @NotBlank String id) {
          roomFacade.deleteAllExpenses(id);
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void editRoomName(@PathVariable @NotBlank String id, @Valid @RequestBody EditRoomRequest request) {
+        roomFacade.editRoomName(id, request);
+    }
+
+
 }

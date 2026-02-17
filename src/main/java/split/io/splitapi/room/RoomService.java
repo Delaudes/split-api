@@ -33,4 +33,8 @@ public class RoomService {
     public void deleteAllExpenses(String roomId) {
         roomPort.deleteAllExpenses(roomId);
     }
+
+    public void editRoomName(String id, String name) {
+        roomPort.editRoomName(id, name);
+    }
 }
