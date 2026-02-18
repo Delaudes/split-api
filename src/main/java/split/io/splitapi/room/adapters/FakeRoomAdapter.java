@@ -16,6 +16,7 @@ public class FakeRoomAdapter implements RoomPort {
     public Payer newPayer;
     public Expense newExpense;
     public String newRoomName;
+    public String newPayerName;
 
     @Override
     public void create(Room room) {
@@ -54,5 +55,16 @@ public class FakeRoomAdapter implements RoomPort {
     public void editRoomName(String id, String name) {
         this.roomId = id;
         this.newRoomName = name;
+    }
+
+    @Override
+    public void editPayerName(String id, String name) {
+        this.payerId = id;
+        this.newPayerName = name;
+    }
+
+    @Override
+    public void deletePayer(String id) {
+        this.payerId = id;
     }
 }

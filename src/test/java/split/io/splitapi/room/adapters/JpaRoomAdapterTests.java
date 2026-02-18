@@ -124,7 +124,7 @@ class JpaRoomAdapterTests {
     @Test
     void shouldEditRoomName() {
         // Given
-        String newName = "New Room Name";
+        String newName = "new-room-name";
         fakeRoomRepository.roomToReturn = createRoomEntity(roomId);
 
         // When
@@ -133,6 +133,20 @@ class JpaRoomAdapterTests {
         // Then
         assertEquals(roomId, fakeRoomRepository.findByIdParam);
         assertEquals(newName, fakeRoomRepository.savedRoom.getName());
+    }
+
+    @Test
+    void shouldEditPayerName() {
+        // Given
+        String newName = "new-payer-name";
+        fakePayerRepository.payerToReturn = new PayerEntity(payerId, "payer-name", roomId);
+
+        // When
+        adapter.editPayerName(payerId, newName);
+
+        // Then
+        assertEquals(payerId, fakePayerRepository.findByIdParam);
+        assertEquals(newName, fakePayerRepository.savedPayer.getName());
     }
 
     private static @NonNull RoomEntity createRoomEntity(String roomId) {

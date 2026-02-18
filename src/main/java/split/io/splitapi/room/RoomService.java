@@ -37,4 +37,12 @@ public class RoomService {
     public void editRoomName(String id, String name) {
         roomPort.editRoomName(id, name);
     }
+
+    public void editPayerName(String id, String name) {
+        roomPort.editPayerName(id, name);
+    }
+
+    public void deletePayer(String id) {
+        roomPort.deletePayer(id);
+    }
 }

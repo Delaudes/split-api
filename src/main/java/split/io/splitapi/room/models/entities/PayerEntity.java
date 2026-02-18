@@ -15,6 +15,7 @@ public class PayerEntity {
     @Id
     private String id;
 
+    @Setter
     private String name;
 
     @Column(name = "room_id")
