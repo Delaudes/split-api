@@ -5,10 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.room.adapters.FakeRoomAdapter;
 import split.io.splitapi.room.models.*;
-import split.io.splitapi.room.models.inputs.AddExpenseRequest;
-import split.io.splitapi.room.models.inputs.AddPayerRequest;
-import split.io.splitapi.room.models.inputs.CreateRoomRequest;
-import split.io.splitapi.room.models.inputs.EditRoomRequest;
+import split.io.splitapi.room.models.inputs.*;
 import split.io.splitapi.room.models.outputs.*;
 import split.io.splitapi.uuid.FakeUuidGenerator;
 
@@ -133,6 +130,20 @@ class RoomFacadeTests {
         // Then
         assertEquals(roomId, fakeRoomAdapter.roomId);
         assertEquals(newRoomName, fakeRoomAdapter.newRoomName);
+    }
+
+    @Test
+    void shouldEditPayerName() {
+        // Given
+        String payerId = "fake-payer-id";
+        String newPayerName = "new-fake-payer-name";
+
+        // When
+        roomFacade.editPayerName(payerId, new EditPayerRequest(newPayerName));
+
+        // Then
+        assertEquals(payerId, fakeRoomAdapter.payerId);
+        assertEquals(newPayerName, fakeRoomAdapter.newPayerName);
     }
 
     private static @NonNull Room createRoom(String roomId) {

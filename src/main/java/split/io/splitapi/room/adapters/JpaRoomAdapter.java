@@ -20,19 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JpaRoomAdapter implements RoomPort {
 
-    private final RoomRepository roomEntityRepository;
-    private final PayerRepository payerEntityRepository;
-    private final ExpenseRepository expenseEntityRepository;
+    private final RoomRepository roomRepository;
+    private final PayerRepository payerRepository;
+    private final ExpenseRepository expenseRepository;
 
     @Override
     public void create(Room room) {
         RoomEntity roomEntity = new RoomEntity(room.id(), room.name());
-        roomEntityRepository.save(roomEntity);
+        roomRepository.save(roomEntity);
     }
 
     @Override
     public Room fetch(String id) {
-        RoomEntity roomEntity = roomEntityRepository.findById(id)
+        RoomEntity roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
         return mapToRoom(roomEntity);
     }
@@ -40,7 +40,7 @@ public class JpaRoomAdapter implements RoomPort {
     @Override
     public void addPayer(String roomId, Payer payer) {
         PayerEntity payerEntity = new PayerEntity(payer.id(), payer.name(), roomId);
-        payerEntityRepository.save(payerEntity);
+        payerRepository.save(payerEntity);
     }
 
     @Override
@@ -51,25 +51,38 @@ public class JpaRoomAdapter implements RoomPort {
                 expense.amount(),
                 payerId
         );
-        expenseEntityRepository.save(expenseEntity);
+        expenseRepository.save(expenseEntity);
     }
 
     @Override
     public void deleteExpense(String id) {
-        expenseEntityRepository.deleteById(id);
+        expenseRepository.deleteById(id);
     }
 
     @Override
     public void deleteAllExpenses(String roomId) {
-        expenseEntityRepository.deleteByRoomId(roomId);
+        expenseRepository.deleteByRoomId(roomId);
     }
 
     @Override
     public void editRoomName(String id, String name) {
-        RoomEntity roomEntity = roomEntityRepository.findById(id)
+        RoomEntity roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
         roomEntity.setName(name);
-        roomEntityRepository.save(roomEntity);
+        roomRepository.save(roomEntity);
+    }
+
+    @Override
+    public void editPayerName(String id, String name) {
+        PayerEntity payerEntity = payerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payer not found with id: " + id));
+        payerEntity.setName(name);
+        payerRepository.save(payerEntity);
+    }
+
+    @Override
+    public void deletePayer(String id) {
+        payerRepository.deleteById(id);
     }
 
     private Room mapToRoom(RoomEntity roomEntity) {

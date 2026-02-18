@@ -9,5 +9,4 @@ class SplitApiApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
