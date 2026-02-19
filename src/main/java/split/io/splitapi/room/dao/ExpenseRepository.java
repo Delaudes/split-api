@@ -6,4 +6,5 @@ public interface ExpenseRepository {
     void save(ExpenseEntity expenseEntity);
     void deleteById(String id);
     void deleteByRoomId(String roomId);
+    void archiveByRoomId(String roomId);
 }

@@ -20,13 +20,16 @@ public class ExpenseEntity {
     @Column(name = "payer_id")
     private String payerId;
 
+    private boolean archived = false;
+
     public ExpenseEntity() {
     }
 
-    public ExpenseEntity(String id, String description, BigDecimal amount, String payerId) {
+    public ExpenseEntity(String id, String description, BigDecimal amount, String payerId, boolean archived) {
         this.id = id;
         this.description = description;
         this.amount = amount;
         this.payerId = payerId;
+        this.archived = archived;
     }
 }

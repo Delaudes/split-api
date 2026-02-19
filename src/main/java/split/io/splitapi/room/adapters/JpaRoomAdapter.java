@@ -49,7 +49,7 @@ public class JpaRoomAdapter implements RoomPort {
                 expense.id(),
                 expense.description(),
                 expense.amount(),
-                payerId
+                payerId, false
         );
         expenseRepository.save(expenseEntity);
     }
@@ -85,6 +85,16 @@ public class JpaRoomAdapter implements RoomPort {
         payerRepository.deleteById(id);
     }
 
+    @Override
+    public void deleteRoom(String id) {
+        roomRepository.deleteById(id);
+    }
+
+    @Override
+    public void archiveAllExpenses(String roomId) {
+        expenseRepository.archiveByRoomId(roomId);
+    }
+
     private Room mapToRoom(RoomEntity roomEntity) {
         ArrayList<Payer> payers = roomEntity.getPayers().stream()
                 .map(this::mapToPayer)
@@ -105,7 +115,7 @@ public class JpaRoomAdapter implements RoomPort {
         return new Expense(
                 expenseEntity.getId(),
                 expenseEntity.getDescription(),
-                expenseEntity.getAmount()
+                expenseEntity.getAmount(), expenseEntity.isArchived()
         );
     }
 }

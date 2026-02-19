@@ -8,11 +8,15 @@ public record Payer(String id, String name, ArrayList<Expense> expenses) {
         this.expenses.add(expense);
     }
 
-    public void deleteExpense(String id) {
-        expenses.removeIf(expense -> expense.id().equals(id));
+    public void deleteArchivedExpenses() {
+        this.expenses.removeIf(Expense::archived);
     }
 
-    public void deleteExpenses() {
-        expenses.clear();
+    public void deleteNotArchivedExpenses() {
+        this.expenses.removeIf(expense -> !expense.archived());
+    }
+
+    public boolean hasEmptyExpenses() {
+        return this.expenses.isEmpty();
     }
 }

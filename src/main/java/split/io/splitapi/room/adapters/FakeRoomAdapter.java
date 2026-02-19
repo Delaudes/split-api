@@ -67,4 +67,14 @@ public class FakeRoomAdapter implements RoomPort {
     public void deletePayer(String id) {
         this.payerId = id;
     }
+
+    @Override
+    public void deleteRoom(String id) {
+        this.roomId = id;
+    }
+
+    @Override
+    public void archiveAllExpenses(String roomId) {
+        this.roomId = roomId;
+    }
 }

@@ -15,4 +15,6 @@ public interface RoomPort {
     void editRoomName(String id, String name);
     void editPayerName(String id, String name);
     void deletePayer(String id);
+    void deleteRoom(String id);
+    void archiveAllExpenses(String roomId);
 }

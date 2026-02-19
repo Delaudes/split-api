@@ -61,4 +61,13 @@ public class RoomFacade {
     public void deletePayer(String id) {
         roomService.deletePayer(id);
     }
+
+    public void deleteRoom(String id) {
+        roomService.deleteRoom(id);
+    }
+
+    public FetchRoomResponse fetchHistory(String id) {
+        Room room = roomService.fetchRoomHistory(id);
+        return roomMapper.toFetchRoomResponse(room);
+    }
 }

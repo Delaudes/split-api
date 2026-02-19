@@ -7,6 +7,7 @@ public class FakeExpenseRepository implements ExpenseRepository {
     public ExpenseEntity savedExpense;
     public String deletedExpenseId;
     public String deletedByRoomId;
+    public String archivedByRoomId;
 
     @Override
     public void save(ExpenseEntity expenseEntity) {
@@ -21,5 +22,10 @@ public class FakeExpenseRepository implements ExpenseRepository {
     @Override
     public void deleteByRoomId(String roomId) {
         this.deletedByRoomId = roomId;
+    }
+
+    @Override
+    public void archiveByRoomId(String roomId) {
+        this.archivedByRoomId = roomId;
     }
 }

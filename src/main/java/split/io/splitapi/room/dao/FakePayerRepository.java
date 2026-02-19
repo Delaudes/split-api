@@ -9,7 +9,7 @@ public class FakePayerRepository implements PayerRepository {
     public PayerEntity savedPayer;
     public String findByIdParam;
     public PayerEntity payerToReturn;
-    public String deleteByIdParam;
+    public String deletedPayerId;
 
     @Override
     public void save(PayerEntity payerEntity) {
@@ -24,6 +24,6 @@ public class FakePayerRepository implements PayerRepository {
 
     @Override
     public void deleteById(String id) {
-        this.deleteByIdParam = id;
+        this.deletedPayerId = id;
     }
 }
