@@ -9,6 +9,7 @@ public class FakeRoomRepository implements RoomRepository {
     public RoomEntity savedRoom;
     public String findByIdParam;
     public RoomEntity roomToReturn;
+    public String deletedRoomId;
 
     @Override
     public void save(RoomEntity roomEntity) {
@@ -19,5 +20,10 @@ public class FakeRoomRepository implements RoomRepository {
     public Optional<RoomEntity> findById(String id) {
         this.findByIdParam = id;
         return Optional.ofNullable(roomToReturn);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        this.deletedRoomId = id;
     }
 }

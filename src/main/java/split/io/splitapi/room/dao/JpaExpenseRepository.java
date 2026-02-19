@@ -13,4 +13,9 @@ public interface JpaExpenseRepository extends Repository<ExpenseEntity, String>,
     @Transactional
     @Query("DELETE FROM ExpenseEntity e WHERE e.payerId IN (SELECT p.id FROM PayerEntity p WHERE p.roomId = :roomId)")
     void deleteByRoomId(@Param("roomId") String roomId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ExpenseEntity e SET e.archived = true WHERE e.payerId IN (SELECT p.id FROM PayerEntity p WHERE p.roomId = :roomId)")
+    void archiveByRoomId(@Param("roomId") String roomId);
 }

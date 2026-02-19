@@ -91,7 +91,7 @@ class JpaRoomAdapterTests {
     @Test
     void shouldAddExpense() {
         // Given
-        Expense expense = new Expense(expenseId, "fake-expense-description", new BigDecimal("150.00"));
+        Expense expense = new Expense(expenseId, "fake-expense-description", new BigDecimal("150.00"), false);
 
         // When
         adapter.addExpense(payerId, expense);
@@ -149,16 +149,34 @@ class JpaRoomAdapterTests {
         assertEquals(newName, fakePayerRepository.savedPayer.getName());
     }
 
+    @Test
+    void shouldDeletePayer() {
+        // When
+        adapter.deletePayer(payerId);
+
+        // Then
+        assertEquals(payerId, fakePayerRepository.deletedPayerId);
+    }
+
+    @Test
+    void shouldDeleteRoom() {
+        // When
+        adapter.deleteRoom(roomId);
+
+        // Then
+        assertEquals(roomId, fakeRoomRepository.deletedRoomId);
+    }
+
     private static @NonNull RoomEntity createRoomEntity(String roomId) {
         RoomEntity roomEntity = new RoomEntity(roomId, "Weekend");
 
         PayerEntity payer1 = new PayerEntity("payer-1", "Alice", roomId);
-        ExpenseEntity expense1 = new ExpenseEntity("expense-1", "Restaurant", new BigDecimal("50.00"), "payer-1");
-        ExpenseEntity expense2 = new ExpenseEntity("expense-2", "Cinéma", new BigDecimal("30.00"), "payer-1");
+        ExpenseEntity expense1 = new ExpenseEntity("expense-1", "Restaurant", new BigDecimal("50.00"), "payer-1", false);
+        ExpenseEntity expense2 = new ExpenseEntity("expense-2", "Cinéma", new BigDecimal("30.00"), "payer-1", false);
         payer1.setExpenses(List.of(expense1, expense2));
 
         PayerEntity payer2 = new PayerEntity("payer-2", "Bob", roomId);
-        ExpenseEntity expense3 = new ExpenseEntity("expense-3", "Essence", new BigDecimal("40.00"), "payer-2");
+        ExpenseEntity expense3 = new ExpenseEntity("expense-3", "Essence", new BigDecimal("40.00"), "payer-2", false);
         payer2.setExpenses(List.of(expense3));
 
         roomEntity.setPayers(List.of(payer1, payer2));

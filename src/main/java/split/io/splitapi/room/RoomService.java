@@ -15,7 +15,9 @@ public class RoomService {
     }
 
     public Room fetchRoom(String id) {
-        return roomPort.fetch(id);
+        Room room = roomPort.fetch(id);
+        room.deleteArchivedExpenses();
+        return room;
     }
 
     public void addPayer(String roomId, Payer payer) {
@@ -31,7 +33,7 @@ public class RoomService {
     }
 
     public void deleteAllExpenses(String roomId) {
-        roomPort.deleteAllExpenses(roomId);
+        roomPort.archiveAllExpenses(roomId);
     }
 
     public void editRoomName(String id, String name) {
@@ -44,5 +46,15 @@ public class RoomService {
 
     public void deletePayer(String id) {
         roomPort.deletePayer(id);
+    }
+
+    public void deleteRoom(String id) {
+        roomPort.deleteRoom(id);
+    }
+
+    public Room fetchRoomHistory(String id) {
+        Room room = roomPort.fetch(id);
+        room.deleteNotArchivedExpenses();
+        return room;
     }
 }

@@ -73,4 +73,16 @@ public class RoomController {
     public void deletePayer(@PathVariable @NotBlank String id) {
         roomFacade.deletePayer(id);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRoom(@PathVariable @NotBlank String id) {
+        roomFacade.deleteRoom(id);
+    }
+
+    @GetMapping("/{id}/history")
+    @ResponseStatus(HttpStatus.OK)
+    public FetchRoomResponse fetchHistory(@PathVariable @NotBlank String id) {
+        return roomFacade.fetchHistory(id);
+    }
 }

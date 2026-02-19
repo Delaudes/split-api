@@ -42,6 +42,6 @@ public class RoomMapper {
     }
 
     public Expense toExpense(AddExpenseRequest request, String id) {
-        return new Expense(id, request.expenseDescription(), request.expenseAmount());
+        return new Expense(id, request.expenseDescription(), request.expenseAmount(), false);
     }
 }

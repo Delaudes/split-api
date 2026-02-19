@@ -19,7 +19,7 @@ public class RoomEntity {
     private String name;
 
     @Setter
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<PayerEntity> payers = new ArrayList<>();
 
