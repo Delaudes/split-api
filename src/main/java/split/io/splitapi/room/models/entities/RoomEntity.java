@@ -19,8 +19,8 @@ public class RoomEntity {
     private String name;
 
     @Setter
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
     private List<PayerEntity> payers = new ArrayList<>();
 
     public RoomEntity() {
