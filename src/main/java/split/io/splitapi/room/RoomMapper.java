@@ -19,7 +19,7 @@ public class RoomMapper {
         List<FetchPayerResponse> payerResponses = room.payers().stream()
                 .map(payer -> new FetchPayerResponse(payer.id(), payer.name(),
                         payer.expenses().stream()
-                                .map(expense -> new FetchExpenseResponse(expense.id(), expense.description(), expense.amount()))
+                                .map(expense -> new FetchExpenseResponse(expense.id(), expense.description(), expense.amount(), expense.excludedPayersId()))
                                 .toList()))
                 .toList();
         return new FetchRoomResponse(room.id(), room.name(), payerResponses);
@@ -42,6 +42,7 @@ public class RoomMapper {
     }
 
     public Expense toExpense(AddExpenseRequest request, String id) {
-        return new Expense(id, request.expenseDescription(), request.expenseAmount(), false);
+        return new Expense(id, request.expenseDescription(), request.expenseAmount(), false, new ArrayList<>());
     }
+
 }

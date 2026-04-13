@@ -3,12 +3,14 @@ package split.io.splitapi.room.adapters;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import split.io.splitapi.room.dao.FakeExcludedPayerRepository;
 import split.io.splitapi.room.dao.FakeExpenseRepository;
 import split.io.splitapi.room.dao.FakePayerRepository;
 import split.io.splitapi.room.dao.FakeRoomRepository;
 import split.io.splitapi.room.models.Expense;
 import split.io.splitapi.room.models.Payer;
 import split.io.splitapi.room.models.Room;
+import split.io.splitapi.room.models.entities.ExcludedPayerEntity;
 import split.io.splitapi.room.models.entities.ExpenseEntity;
 import split.io.splitapi.room.models.entities.PayerEntity;
 import split.io.splitapi.room.models.entities.RoomEntity;
@@ -25,6 +27,7 @@ class JpaRoomAdapterTests {
     private FakeRoomRepository fakeRoomRepository;
     private FakePayerRepository fakePayerRepository;
     private FakeExpenseRepository fakeExpenseRepository;
+    private FakeExcludedPayerRepository fakeExcludedPayerRepository;
 
     String roomId = "fake-room-id";
     String payerId = "fake-payer-id";
@@ -35,7 +38,8 @@ class JpaRoomAdapterTests {
         fakeRoomRepository = new FakeRoomRepository();
         fakePayerRepository = new FakePayerRepository();
         fakeExpenseRepository = new FakeExpenseRepository();
-        adapter = new JpaRoomAdapter(fakeRoomRepository, fakePayerRepository, fakeExpenseRepository);
+        fakeExcludedPayerRepository = new FakeExcludedPayerRepository();
+        adapter = new JpaRoomAdapter(fakeRoomRepository, fakePayerRepository, fakeExpenseRepository, fakeExcludedPayerRepository);
     }
 
     @Test
@@ -91,7 +95,7 @@ class JpaRoomAdapterTests {
     @Test
     void shouldAddExpense() {
         // Given
-        Expense expense = new Expense(expenseId, "fake-expense-description", new BigDecimal("150.00"), false);
+        Expense expense = new Expense(expenseId, "fake-expense-description", new BigDecimal("150.00"), false, new ArrayList<>());
 
         // When
         adapter.addExpense(payerId, expense);
@@ -167,12 +171,43 @@ class JpaRoomAdapterTests {
         assertEquals(roomId, fakeRoomRepository.deletedRoomId);
     }
 
+    @Test
+    void shouldArchiveAllExpenses() {
+        // When
+        adapter.archiveAllExpenses(roomId);
+
+        // Then
+        assertEquals(roomId, fakeExpenseRepository.archivedByRoomId);
+    }
+
+    @Test
+    void shouldAddExpensePayer() {
+        // When
+        adapter.addExpensePayer(expenseId, payerId);
+
+        // Then
+        assertEquals(expenseId, fakeExcludedPayerRepository.deletedExcludedPayer.getExpenseId());
+        assertEquals(payerId, fakeExcludedPayerRepository.deletedExcludedPayer.getPayerId());
+    }
+
+    @Test
+    void shouldDeleteExpensePayer() {
+        // When
+        adapter.deleteExpensePayer(expenseId, payerId);
+
+        // Then
+        assertEquals(expenseId, fakeExcludedPayerRepository.savedExcludedPayer.getExpenseId());
+        assertEquals(payerId, fakeExcludedPayerRepository.savedExcludedPayer.getPayerId());
+    }
+
     private static @NonNull RoomEntity createRoomEntity(String roomId) {
         RoomEntity roomEntity = new RoomEntity(roomId, "Weekend");
 
         PayerEntity payer1 = new PayerEntity("payer-1", "Alice", roomId);
         ExpenseEntity expense1 = new ExpenseEntity("expense-1", "Restaurant", new BigDecimal("50.00"), "payer-1", false);
         ExpenseEntity expense2 = new ExpenseEntity("expense-2", "Cinéma", new BigDecimal("30.00"), "payer-1", false);
+        ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity("expense-2", "payer-1");
+        expense2.setExcludedPayers(List.of(excludedPayer));
         payer1.setExpenses(List.of(expense1, expense2));
 
         PayerEntity payer2 = new PayerEntity("payer-2", "Bob", roomId);
@@ -204,6 +239,12 @@ class JpaRoomAdapterTests {
                 assertEquals(expenseEntity.getId(), expense.id());
                 assertEquals(expenseEntity.getDescription(), expense.description());
                 assertEquals(expenseEntity.getAmount(), expense.amount());
+
+                for (int k = 0; k < expenseEntity.getExcludedPayers().size(); k++) {
+                    ExcludedPayerEntity excludedPayerEntity = expenseEntity.getExcludedPayers().get(k);
+
+                    assertTrue(expense.excludedPayersId().contains(excludedPayerEntity.getPayerId()));
+                }
             }
         }
     }

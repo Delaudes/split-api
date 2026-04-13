@@ -77,4 +77,16 @@ public class FakeRoomAdapter implements RoomPort {
     public void archiveAllExpenses(String roomId) {
         this.roomId = roomId;
     }
+
+    @Override
+    public void addExpensePayer(String expenseId, String payerId) {
+        this.expenseId = expenseId;
+        this.payerId = payerId;
+    }
+
+    @Override
+    public void deleteExpensePayer(String expenseId, String payerId) {
+        this.expenseId = expenseId;
+        this.payerId = payerId;
+    }
 }

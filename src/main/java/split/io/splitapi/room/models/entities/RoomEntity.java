@@ -30,5 +30,4 @@ public class RoomEntity {
         this.id = id;
         this.name = name;
     }
-
 }

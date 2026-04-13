@@ -57,4 +57,12 @@ public class RoomService {
         room.deleteNotArchivedExpenses();
         return room;
     }
+
+    public void addExpensePayer(String expenseId, String payerId) {
+        roomPort.addExpensePayer(expenseId, payerId);
+    }
+
+        public void deleteExpensePayer(String expenseId, String payerId) {
+            roomPort.deleteExpensePayer(expenseId, payerId);
+    }
 }

@@ -3,12 +3,14 @@ package split.io.splitapi.room.adapters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import split.io.splitapi.room.RoomPort;
+import split.io.splitapi.room.dao.ExcludedPayerRepository;
 import split.io.splitapi.room.dao.ExpenseRepository;
 import split.io.splitapi.room.dao.PayerRepository;
 import split.io.splitapi.room.dao.RoomRepository;
 import split.io.splitapi.room.models.Expense;
 import split.io.splitapi.room.models.Payer;
 import split.io.splitapi.room.models.Room;
+import split.io.splitapi.room.models.entities.ExcludedPayerEntity;
 import split.io.splitapi.room.models.entities.ExpenseEntity;
 import split.io.splitapi.room.models.entities.PayerEntity;
 import split.io.splitapi.room.models.entities.RoomEntity;
@@ -23,6 +25,7 @@ public class JpaRoomAdapter implements RoomPort {
     private final RoomRepository roomRepository;
     private final PayerRepository payerRepository;
     private final ExpenseRepository expenseRepository;
+    private final ExcludedPayerRepository excludedPayerRepository;
 
     @Override
     public void create(Room room) {
@@ -95,6 +98,18 @@ public class JpaRoomAdapter implements RoomPort {
         expenseRepository.archiveByRoomId(roomId);
     }
 
+    @Override
+    public void addExpensePayer(String expenseId, String payerId) {
+        ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
+        excludedPayerRepository.delete(excludedPayer);
+    }
+
+    @Override
+    public void deleteExpensePayer(String expenseId, String payerId) {
+        ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
+        excludedPayerRepository.save(excludedPayer);
+    }
+
     private Room mapToRoom(RoomEntity roomEntity) {
         ArrayList<Payer> payers = roomEntity.getPayers().stream()
                 .map(this::mapToPayer)
@@ -112,10 +127,15 @@ public class JpaRoomAdapter implements RoomPort {
     }
 
     private Expense mapToExpense(ExpenseEntity expenseEntity) {
+        ArrayList<String> excludedPayers = expenseEntity.getExcludedPayers().stream()
+                .map(ExcludedPayerEntity::getPayerId)
+                .collect(Collectors.toCollection(ArrayList::new));
+
         return new Expense(
                 expenseEntity.getId(),
                 expenseEntity.getDescription(),
-                expenseEntity.getAmount(), expenseEntity.isArchived()
+                expenseEntity.getAmount(), expenseEntity.isArchived(),
+                excludedPayers
         );
     }
 }

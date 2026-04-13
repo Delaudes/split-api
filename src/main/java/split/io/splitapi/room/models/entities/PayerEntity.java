@@ -34,5 +34,4 @@ public class PayerEntity {
         this.name = name;
         this.roomId = roomId;
     }
-
 }

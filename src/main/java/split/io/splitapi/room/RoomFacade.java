@@ -70,4 +70,12 @@ public class RoomFacade {
         Room room = roomService.fetchRoomHistory(id);
         return roomMapper.toFetchRoomResponse(room);
     }
+
+    public void addExpensePayer(AddExpensePayerRequest request) {
+        roomService.addExpensePayer(request.expenseId(), request.payerId());
+    }
+
+    public void deleteExpensePayer(String expenseId, String payerId) {
+        roomService.deleteExpensePayer(expenseId, payerId);
+    }
 }
