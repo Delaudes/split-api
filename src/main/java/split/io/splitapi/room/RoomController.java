@@ -85,4 +85,16 @@ public class RoomController {
     public FetchRoomResponse fetchHistory(@PathVariable @NotBlank String id) {
         return roomFacade.fetchHistory(id);
     }
+
+    @PostMapping("payers/expenses/payers")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addExpensePayer(@Valid @RequestBody AddExpensePayerRequest request) {
+        roomFacade.addExpensePayer( request);
+    }
+
+     @DeleteMapping("payers/expenses/{expenseId}/payers/{payerId}")
+     @ResponseStatus(HttpStatus.NO_CONTENT)
+     public void deleteExpensePayer(@PathVariable @NotBlank String expenseId, @PathVariable @NotBlank String payerId) {
+         roomFacade.deleteExpensePayer(expenseId, payerId);
+     }
 }
