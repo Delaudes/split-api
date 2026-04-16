@@ -190,10 +190,10 @@ class RoomFacadeTests {
         // Given
         String expenseId = "fake-expense-id";
         String payerId = "fake-payer-id";
-        AddExpensePayerRequest request = new AddExpensePayerRequest(expenseId, payerId);
+        ExcludeExpensePayerRequest request = new ExcludeExpensePayerRequest(expenseId, payerId);
 
         // When
-        roomFacade.addExpensePayer(request);
+        roomFacade.excludeExpensePayer(request);
 
         // Then
         assertEquals(expenseId, fakeRoomAdapter.expenseId);
@@ -207,7 +207,7 @@ class RoomFacadeTests {
         String payerId = "fake-payer-id";
 
         // When
-        roomFacade.deleteExpensePayer(expenseId, payerId);
+        roomFacade.includeExpensePayer(expenseId, payerId);
 
         // Then
         assertEquals(expenseId, fakeRoomAdapter.expenseId);

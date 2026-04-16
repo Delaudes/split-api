@@ -183,7 +183,7 @@ class JpaRoomAdapterTests {
     @Test
     void shouldAddExpensePayer() {
         // When
-        adapter.addExpensePayer(expenseId, payerId);
+        adapter.excludeExpensePayer(expenseId, payerId);
 
         // Then
         assertEquals(expenseId, fakeExcludedPayerRepository.deletedExcludedPayer.getExpenseId());
@@ -193,7 +193,7 @@ class JpaRoomAdapterTests {
     @Test
     void shouldDeleteExpensePayer() {
         // When
-        adapter.deleteExpensePayer(expenseId, payerId);
+        adapter.includeExpensePayer(expenseId, payerId);
 
         // Then
         assertEquals(expenseId, fakeExcludedPayerRepository.savedExcludedPayer.getExpenseId());

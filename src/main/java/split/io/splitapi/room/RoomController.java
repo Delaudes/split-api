@@ -88,13 +88,13 @@ public class RoomController {
 
     @PostMapping("payers/expenses/payers")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addExpensePayer(@Valid @RequestBody AddExpensePayerRequest request) {
-        roomFacade.addExpensePayer( request);
+    public void excludeExpensePayer(@Valid @RequestBody ExcludeExpensePayerRequest request) {
+        roomFacade.excludeExpensePayer( request);
     }
 
      @DeleteMapping("payers/expenses/{expenseId}/payers/{payerId}")
      @ResponseStatus(HttpStatus.NO_CONTENT)
-     public void deleteExpensePayer(@PathVariable @NotBlank String expenseId, @PathVariable @NotBlank String payerId) {
-         roomFacade.deleteExpensePayer(expenseId, payerId);
+     public void includeExpensePayer(@PathVariable @NotBlank String expenseId, @PathVariable @NotBlank String payerId) {
+         roomFacade.includeExpensePayer(expenseId, payerId);
      }
 }
