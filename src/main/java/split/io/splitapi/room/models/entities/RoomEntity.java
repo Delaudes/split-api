@@ -15,11 +15,12 @@ public class RoomEntity {
     @Id
     private String id;
 
+    @Setter
     private String name;
 
     @Setter
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "room_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
     private List<PayerEntity> payers = new ArrayList<>();
 
     public RoomEntity() {
@@ -29,5 +30,4 @@ public class RoomEntity {
         this.id = id;
         this.name = name;
     }
-
 }

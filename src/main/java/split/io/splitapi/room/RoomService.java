@@ -15,7 +15,9 @@ public class RoomService {
     }
 
     public Room fetchRoom(String id) {
-        return roomPort.fetch(id);
+        Room room = roomPort.fetch(id);
+        room.deleteArchivedExpenses();
+        return room;
     }
 
     public void addPayer(String roomId, Payer payer) {
@@ -28,5 +30,39 @@ public class RoomService {
 
     public void deleteExpense(String id) {
         roomPort.deleteExpense(id);
+    }
+
+    public void deleteAllExpenses(String roomId) {
+        roomPort.archiveAllExpenses(roomId);
+    }
+
+    public void editRoomName(String id, String name) {
+        roomPort.editRoomName(id, name);
+    }
+
+    public void editPayerName(String id, String name) {
+        roomPort.editPayerName(id, name);
+    }
+
+    public void deletePayer(String id) {
+        roomPort.deletePayer(id);
+    }
+
+    public void deleteRoom(String id) {
+        roomPort.deleteRoom(id);
+    }
+
+    public Room fetchRoomHistory(String id) {
+        Room room = roomPort.fetch(id);
+        room.deleteNotArchivedExpenses();
+        return room;
+    }
+
+    public void excludeExpensePayer(String expenseId, String payerId) {
+        roomPort.excludeExpensePayer(expenseId, payerId);
+    }
+
+        public void includeExpensePayer(String expenseId, String payerId) {
+            roomPort.includeExpensePayer(expenseId, payerId);
     }
 }

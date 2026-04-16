@@ -3,12 +3,14 @@ package split.io.splitapi.room.adapters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import split.io.splitapi.room.RoomPort;
+import split.io.splitapi.room.dao.ExcludedPayerRepository;
 import split.io.splitapi.room.dao.ExpenseRepository;
 import split.io.splitapi.room.dao.PayerRepository;
 import split.io.splitapi.room.dao.RoomRepository;
 import split.io.splitapi.room.models.Expense;
 import split.io.splitapi.room.models.Payer;
 import split.io.splitapi.room.models.Room;
+import split.io.splitapi.room.models.entities.ExcludedPayerEntity;
 import split.io.splitapi.room.models.entities.ExpenseEntity;
 import split.io.splitapi.room.models.entities.PayerEntity;
 import split.io.splitapi.room.models.entities.RoomEntity;
@@ -20,19 +22,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JpaRoomAdapter implements RoomPort {
 
-    private final RoomRepository roomEntityRepository;
-    private final PayerRepository payerEntityRepository;
-    private final ExpenseRepository expenseEntityRepository;
+    private final RoomRepository roomRepository;
+    private final PayerRepository payerRepository;
+    private final ExpenseRepository expenseRepository;
+    private final ExcludedPayerRepository excludedPayerRepository;
 
     @Override
     public void create(Room room) {
         RoomEntity roomEntity = new RoomEntity(room.id(), room.name());
-        roomEntityRepository.save(roomEntity);
+        roomRepository.save(roomEntity);
     }
 
     @Override
     public Room fetch(String id) {
-        RoomEntity roomEntity = roomEntityRepository.findById(id)
+        RoomEntity roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
         return mapToRoom(roomEntity);
     }
@@ -40,7 +43,7 @@ public class JpaRoomAdapter implements RoomPort {
     @Override
     public void addPayer(String roomId, Payer payer) {
         PayerEntity payerEntity = new PayerEntity(payer.id(), payer.name(), roomId);
-        payerEntityRepository.save(payerEntity);
+        payerRepository.save(payerEntity);
     }
 
     @Override
@@ -49,14 +52,62 @@ public class JpaRoomAdapter implements RoomPort {
                 expense.id(),
                 expense.description(),
                 expense.amount(),
-                payerId
+                payerId, false
         );
-        expenseEntityRepository.save(expenseEntity);
+        expenseRepository.save(expenseEntity);
     }
 
     @Override
     public void deleteExpense(String id) {
-        expenseEntityRepository.deleteById(id);
+        expenseRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAllExpenses(String roomId) {
+        expenseRepository.deleteByRoomId(roomId);
+    }
+
+    @Override
+    public void editRoomName(String id, String name) {
+        RoomEntity roomEntity = roomRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+        roomEntity.setName(name);
+        roomRepository.save(roomEntity);
+    }
+
+    @Override
+    public void editPayerName(String id, String name) {
+        PayerEntity payerEntity = payerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payer not found with id: " + id));
+        payerEntity.setName(name);
+        payerRepository.save(payerEntity);
+    }
+
+    @Override
+    public void deletePayer(String id) {
+        payerRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteRoom(String id) {
+        roomRepository.deleteById(id);
+    }
+
+    @Override
+    public void archiveAllExpenses(String roomId) {
+        expenseRepository.archiveByRoomId(roomId);
+    }
+
+    @Override
+    public void excludeExpensePayer(String expenseId, String payerId) {
+        ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
+        excludedPayerRepository.save(excludedPayer);
+    }
+
+    @Override
+    public void includeExpensePayer(String expenseId, String payerId) {
+        ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
+        excludedPayerRepository.delete(excludedPayer);
     }
 
     private Room mapToRoom(RoomEntity roomEntity) {
@@ -76,10 +127,15 @@ public class JpaRoomAdapter implements RoomPort {
     }
 
     private Expense mapToExpense(ExpenseEntity expenseEntity) {
+        ArrayList<String> excludedPayers = expenseEntity.getExcludedPayers().stream()
+                .map(ExcludedPayerEntity::getPayerId)
+                .collect(Collectors.toCollection(ArrayList::new));
+
         return new Expense(
                 expenseEntity.getId(),
                 expenseEntity.getDescription(),
-                expenseEntity.getAmount()
+                expenseEntity.getAmount(), expenseEntity.isArchived(),
+                excludedPayers
         );
     }
 }

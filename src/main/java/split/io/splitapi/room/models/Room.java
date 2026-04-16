@@ -8,18 +8,16 @@ public record Room(String id, String name, ArrayList<Payer> payers) {
         this.payers.add(payer);
     }
 
-    public void addExpense(String payerId, Expense expense) {
-        for (Payer payer : payers) {
-            if (payer.id().equals(payerId)) {
-                payer.addExpense(expense);
-                return;
-            }
+    public void deleteArchivedExpenses() {
+        for (Payer payer : this.payers) {
+            payer.deleteArchivedExpenses();
         }
     }
 
-    public void deleteExpense(String id) {
-        for (Payer payer : payers) {
-            payer.deleteExpense(id);
-        }
+    public void deleteNotArchivedExpenses() {
+        this.payers.removeIf(payer -> {
+            payer.deleteNotArchivedExpenses();
+            return payer.hasEmptyExpenses();
+        });
     }
 }

@@ -2,9 +2,7 @@ package split.io.splitapi.room;
 
 import lombok.RequiredArgsConstructor;
 import split.io.splitapi.room.models.*;
-import split.io.splitapi.room.models.inputs.AddExpenseRequest;
-import split.io.splitapi.room.models.inputs.AddPayerRequest;
-import split.io.splitapi.room.models.inputs.CreateRoomRequest;
+import split.io.splitapi.room.models.inputs.*;
 import split.io.splitapi.room.models.outputs.AddExpenseResponse;
 import split.io.splitapi.room.models.outputs.AddPayerResponse;
 import split.io.splitapi.room.models.outputs.CreateRoomResponse;
@@ -46,5 +44,38 @@ public class RoomFacade {
 
     public void deleteExpense(String id) {
         roomService.deleteExpense(id);
+    }
+
+    public void deleteAllExpenses(String roomId) {
+        roomService.deleteAllExpenses(roomId);
+    }
+
+    public void editRoomName(String id, EditRoomRequest request) {
+        roomService.editRoomName(id, request.name());
+    }
+
+    public void editPayerName(String id, EditPayerRequest request) {
+        roomService.editPayerName(id, request.name());
+    }
+
+    public void deletePayer(String id) {
+        roomService.deletePayer(id);
+    }
+
+    public void deleteRoom(String id) {
+        roomService.deleteRoom(id);
+    }
+
+    public FetchRoomResponse fetchHistory(String id) {
+        Room room = roomService.fetchRoomHistory(id);
+        return roomMapper.toFetchRoomResponse(room);
+    }
+
+    public void excludeExpensePayer(ExcludeExpensePayerRequest request) {
+        roomService.excludeExpensePayer(request.expenseId(), request.payerId());
+    }
+
+    public void includeExpensePayer(String expenseId, String payerId) {
+        roomService.includeExpensePayer(expenseId, payerId);
     }
 }

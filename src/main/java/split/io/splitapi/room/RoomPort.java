@@ -11,4 +11,12 @@ public interface RoomPort {
     void addPayer(String roomId, Payer payer);
     void addExpense(String payerId, Expense expense);
     void deleteExpense(String id);
+    void deleteAllExpenses(String roomId);
+    void editRoomName(String id, String name);
+    void editPayerName(String id, String name);
+    void deletePayer(String id);
+    void deleteRoom(String id);
+    void archiveAllExpenses(String roomId);
+    void excludeExpensePayer(String expenseId, String payerId);
+    void includeExpensePayer(String expenseId, String payerId);
 }

@@ -12,6 +12,11 @@ public class FakeRoomAdapter implements RoomPort {
     public Room room = new Room("fake-room-id", "fake-room-name", new ArrayList<>());
     public String roomId;
     public String payerId;
+    public String expenseId;
+    public Payer newPayer;
+    public Expense newExpense;
+    public String newRoomName;
+    public String newPayerName;
 
     @Override
     public void create(Room room) {
@@ -27,17 +32,61 @@ public class FakeRoomAdapter implements RoomPort {
     @Override
     public void addPayer(String roomId, Payer payer) {
         this.roomId = roomId;
-        this.room.addPayer(payer);
+        this.newPayer = payer;
     }
 
     @Override
     public void addExpense(String payerId, Expense expense) {
         this.payerId = payerId;
-        this.room.addExpense(payerId, expense);
+        this.newExpense = expense;
     }
 
     @Override
     public void deleteExpense(String id) {
-        this.room.deleteExpense(id);
+        this.expenseId = id;
+    }
+
+    @Override
+    public void deleteAllExpenses(String roomId) {
+        this.roomId = roomId;
+    }
+
+    @Override
+    public void editRoomName(String id, String name) {
+        this.roomId = id;
+        this.newRoomName = name;
+    }
+
+    @Override
+    public void editPayerName(String id, String name) {
+        this.payerId = id;
+        this.newPayerName = name;
+    }
+
+    @Override
+    public void deletePayer(String id) {
+        this.payerId = id;
+    }
+
+    @Override
+    public void deleteRoom(String id) {
+        this.roomId = id;
+    }
+
+    @Override
+    public void archiveAllExpenses(String roomId) {
+        this.roomId = roomId;
+    }
+
+    @Override
+    public void excludeExpensePayer(String expenseId, String payerId) {
+        this.expenseId = expenseId;
+        this.payerId = payerId;
+    }
+
+    @Override
+    public void includeExpensePayer(String expenseId, String payerId) {
+        this.expenseId = expenseId;
+        this.payerId = payerId;
     }
 }
