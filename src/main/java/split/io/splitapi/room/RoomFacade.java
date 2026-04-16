@@ -71,11 +71,11 @@ public class RoomFacade {
         return roomMapper.toFetchRoomResponse(room);
     }
 
-    public void addExpensePayer(AddExpensePayerRequest request) {
-        roomService.addExpensePayer(request.expenseId(), request.payerId());
+    public void excludeExpensePayer(ExcludeExpensePayerRequest request) {
+        roomService.excludeExpensePayer(request.expenseId(), request.payerId());
     }
 
-    public void deleteExpensePayer(String expenseId, String payerId) {
-        roomService.deleteExpensePayer(expenseId, payerId);
+    public void includeExpensePayer(String expenseId, String payerId) {
+        roomService.includeExpensePayer(expenseId, payerId);
     }
 }

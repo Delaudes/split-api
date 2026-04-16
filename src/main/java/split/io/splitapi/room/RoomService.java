@@ -58,11 +58,11 @@ public class RoomService {
         return room;
     }
 
-    public void addExpensePayer(String expenseId, String payerId) {
-        roomPort.addExpensePayer(expenseId, payerId);
+    public void excludeExpensePayer(String expenseId, String payerId) {
+        roomPort.excludeExpensePayer(expenseId, payerId);
     }
 
-        public void deleteExpensePayer(String expenseId, String payerId) {
-            roomPort.deleteExpensePayer(expenseId, payerId);
+        public void includeExpensePayer(String expenseId, String payerId) {
+            roomPort.includeExpensePayer(expenseId, payerId);
     }
 }

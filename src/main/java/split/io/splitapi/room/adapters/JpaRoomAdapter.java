@@ -99,15 +99,15 @@ public class JpaRoomAdapter implements RoomPort {
     }
 
     @Override
-    public void addExpensePayer(String expenseId, String payerId) {
+    public void excludeExpensePayer(String expenseId, String payerId) {
         ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
-        excludedPayerRepository.delete(excludedPayer);
+        excludedPayerRepository.save(excludedPayer);
     }
 
     @Override
-    public void deleteExpensePayer(String expenseId, String payerId) {
+    public void includeExpensePayer(String expenseId, String payerId) {
         ExcludedPayerEntity excludedPayer = new ExcludedPayerEntity(expenseId, payerId);
-        excludedPayerRepository.save(excludedPayer);
+        excludedPayerRepository.delete(excludedPayer);
     }
 
     private Room mapToRoom(RoomEntity roomEntity) {
