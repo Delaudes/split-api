@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import split.io.splitapi.game.models.inputs.PlayRequest;
 import split.io.splitapi.game.models.outputs.CreateGameResponse;
+import split.io.splitapi.game.models.outputs.FetchGameResponse;
 import split.io.splitapi.game.models.outputs.JoinGameResponse;
 
 @RestController
@@ -34,5 +35,11 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public void play(@PathVariable @NotBlank String id, @Valid @RequestBody PlayRequest request) {
         gameFacade.play(id, request);
+    }
+
+    @GetMapping("/{gameId}/players/{playerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public FetchGameResponse fetchGameForPlayer(@PathVariable @NotBlank String gameId, @PathVariable @NotBlank String playerId) {
+        return gameFacade.fetchGameForPlayer(gameId, playerId);
     }
 }

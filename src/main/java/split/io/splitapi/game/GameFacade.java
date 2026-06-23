@@ -3,8 +3,10 @@ package split.io.splitapi.game;
 import lombok.RequiredArgsConstructor;
 import split.io.splitapi.game.models.Action;
 import split.io.splitapi.game.models.Game;
+import split.io.splitapi.game.models.GameView;
 import split.io.splitapi.game.models.inputs.PlayRequest;
 import split.io.splitapi.game.models.outputs.CreateGameResponse;
+import split.io.splitapi.game.models.outputs.FetchGameResponse;
 import split.io.splitapi.game.models.outputs.JoinGameResponse;
 import split.io.splitapi.uuid.UuidGenerator;
 
@@ -33,5 +35,10 @@ public class GameFacade {
         String actionId = uuidGenerator.generate();
         Action action = gameMapper.toAction(gameId, actionId, request);
         gameService.play(action);
+    }
+
+    public FetchGameResponse fetchGameForPlayer(String gameId, String playerId) {
+        GameView gameView = gameService.fetchGameForPlayer(gameId, playerId);
+        return gameMapper.toFetchGameResponse(gameView);
     }
 }

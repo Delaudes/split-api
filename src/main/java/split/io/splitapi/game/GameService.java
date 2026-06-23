@@ -3,6 +3,7 @@ package split.io.splitapi.game;
 import lombok.RequiredArgsConstructor;
 import split.io.splitapi.game.models.Action;
 import split.io.splitapi.game.models.Game;
+import split.io.splitapi.game.models.GameView;
 
 @RequiredArgsConstructor
 public class GameService {
@@ -22,6 +23,21 @@ public class GameService {
     }
 
     public void play(Action action) {
+        Game game = gamePort.fetchGame(action.gameId());
+        if (game.isNotPlayer(action.playerId())) {
+            throw new RuntimeException("Player not part of this game");
+        }
+        if (game.isInvalidAction(action)) {
+            throw new RuntimeException("Invalid action for this round");
+        }
         gamePort.addAction(action);
+    }
+
+    public GameView fetchGameForPlayer(String gameId, String playerId) {
+        Game game = gamePort.fetchGame(gameId);
+        if (game.isNotPlayer(playerId)) {
+            throw new RuntimeException("Player not part of this game");
+        }
+        return game.buildPlayerView(playerId);
     }
 }
