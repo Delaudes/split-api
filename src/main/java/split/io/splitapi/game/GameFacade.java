@@ -1,7 +1,6 @@
 package split.io.splitapi.game;
 
 import lombok.RequiredArgsConstructor;
-import split.io.splitapi.game.models.Action;
 import split.io.splitapi.game.models.Game;
 import split.io.splitapi.game.models.GameView;
 import split.io.splitapi.game.models.inputs.PlayRequest;
@@ -33,8 +32,7 @@ public class GameFacade {
 
     public void play(String gameId, PlayRequest request) {
         String actionId = uuidGenerator.generate();
-        Action action = gameMapper.toAction(gameId, actionId, request);
-        gameService.play(action);
+        gameService.play(gameId, actionId, request.playerId(), request.x(), request.y());
     }
 
     public FetchGameResponse fetchGameForPlayer(String gameId, String playerId) {

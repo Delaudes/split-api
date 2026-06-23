@@ -15,16 +15,26 @@ public record Game(String id, String playerId, String opponentId, List<Action> a
         return !requestingPlayerId.equals(playerId) && !requestingPlayerId.equals(opponentId);
     }
 
-    public boolean isInvalidAction(Action action) {
-        long count = actions.stream()
-                .filter(a -> a.playerId().equals(action.playerId()))
-                .filter(a -> a.round() == action.round())
-                .filter(a -> a.type() == action.type())
+    public int getNextRound(String playerId) {
+        Map<Integer, List<Action>> playerActionsByRound = actions.stream()
+                .filter(a -> a.playerId().equals(playerId))
+                .collect(Collectors.groupingBy(Action::round));
+
+        for (int round = 1; ; round++) {
+            if (isRoundIncomplete(playerActionsByRound.getOrDefault(round, List.of()))) {
+                return round;
+            }
+        }
+    }
+
+    public ActionType getNextActionType(String playerId) {
+        int currentRound = getNextRound(playerId);
+        long placeCount = actions.stream()
+                .filter(a -> a.playerId().equals(playerId))
+                .filter(a -> a.round() == currentRound)
+                .filter(a -> a.type() == ActionType.PLACE)
                 .count();
-        return switch (action.type()) {
-            case PLACE -> count >= 3;
-            case PREDICT -> count >= 2;
-        };
+        return placeCount < 3 ? ActionType.PLACE : ActionType.PREDICT;
     }
 
     public GameView buildPlayerView(String requestingPlayerId) {

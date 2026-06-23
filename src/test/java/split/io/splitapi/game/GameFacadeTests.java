@@ -76,39 +76,10 @@ class GameFacadeTests {
     }
 
     @Test
-    void shouldRejectPlayIfFourthPlaceInRound() {
-        // Given
-        List<Action> existingActions = new ArrayList<>(List.of(
-                new Action("a1", GAME_ID, PLAYER_ID, 0, 0, ActionType.PLACE, 1),
-                new Action("a2", GAME_ID, PLAYER_ID, 1, 0, ActionType.PLACE, 1),
-                new Action("a3", GAME_ID, PLAYER_ID, 2, 0, ActionType.PLACE, 1)
-        ));
-        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, existingActions);
-        PlayRequest request = new PlayRequest(PLAYER_ID, 3, 0, ActionType.PLACE, 1);
-
-        // When & Then
-        assertThrows(RuntimeException.class, () -> gameFacade.play(GAME_ID, request));
-    }
-
-    @Test
-    void shouldRejectPlayIfThirdPredictInRound() {
-        // Given
-        List<Action> existingActions = new ArrayList<>(List.of(
-                new Action("a1", GAME_ID, PLAYER_ID, 0, 0, ActionType.PREDICT, 1),
-                new Action("a2", GAME_ID, PLAYER_ID, 1, 0, ActionType.PREDICT, 1)
-        ));
-        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, existingActions);
-        PlayRequest request = new PlayRequest(PLAYER_ID, 2, 0, ActionType.PREDICT, 1);
-
-        // When & Then
-        assertThrows(RuntimeException.class, () -> gameFacade.play(GAME_ID, request));
-    }
-
-    @Test
     void shouldRejectPlayIfPlayerNotInGame() {
         // Given
         fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, new ArrayList<>());
-        PlayRequest request = new PlayRequest("unknown-player-id", 2, 3, ActionType.PLACE, 1);
+        PlayRequest request = new PlayRequest("unknown-player-id", 2, 3);
 
         // When & Then
         assertThrows(RuntimeException.class, () -> gameFacade.play(GAME_ID, request));
@@ -116,9 +87,28 @@ class GameFacadeTests {
 
     @Test
     void shouldPlay() {
-        // Given
-        PlayRequest request = new PlayRequest(PLAYER_ID, 2, 3, ActionType.PLACE, 1);
+        // Given — no actions yet, so round 1 and PLACE are determined from game state
+        PlayRequest request = new PlayRequest(PLAYER_ID, 2, 3);
         Action expectedAction = new Action(fakeUuidGenerator.uuid, GAME_ID, PLAYER_ID, 2, 3, ActionType.PLACE, 1);
+
+        // When
+        gameFacade.play(GAME_ID, request);
+
+        // Then
+        assertEquals(expectedAction, fakeGameAdapter.savedAction);
+    }
+
+    @Test
+    void shouldDetermineRoundAndTypeFromGameState() {
+        // Given — player has 3 PLACE in round 1, so next action is PREDICT in round 1
+        List<Action> existingActions = new ArrayList<>(List.of(
+                new Action("a1", GAME_ID, PLAYER_ID, 0, 0, ActionType.PLACE, 1),
+                new Action("a2", GAME_ID, PLAYER_ID, 1, 0, ActionType.PLACE, 1),
+                new Action("a3", GAME_ID, PLAYER_ID, 2, 0, ActionType.PLACE, 1)
+        ));
+        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, existingActions);
+        PlayRequest request = new PlayRequest(PLAYER_ID, 3, 0);
+        Action expectedAction = new Action(fakeUuidGenerator.uuid, GAME_ID, PLAYER_ID, 3, 0, ActionType.PREDICT, 1);
 
         // When
         gameFacade.play(GAME_ID, request);
