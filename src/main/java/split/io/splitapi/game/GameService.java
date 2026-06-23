@@ -1,6 +1,7 @@
 package split.io.splitapi.game;
 
 import lombok.RequiredArgsConstructor;
+import split.io.splitapi.game.models.Action;
 import split.io.splitapi.game.models.Game;
 
 @RequiredArgsConstructor
@@ -18,5 +19,9 @@ public class GameService {
             throw new RuntimeException("Game already has an opponent");
         }
         gamePort.saveOpponentId(gameId, opponentId);
+    }
+
+    public void play(Action action) {
+        gamePort.addAction(action);
     }
 }

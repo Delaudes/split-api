@@ -1,10 +1,11 @@
 package split.io.splitapi.game.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -18,6 +19,11 @@ public class GameEntity {
 
     @Setter
     private String opponentId;
+
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "game_id", referencedColumnName = "game_id")
+    private List<ActionEntity> actions = new ArrayList<>();
 
     public GameEntity() {
     }
