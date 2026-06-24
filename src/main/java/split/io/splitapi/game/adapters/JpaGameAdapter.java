@@ -54,6 +54,6 @@ public class JpaGameAdapter implements GamePort {
         ArrayList<Action> actions = entity.getActions().stream()
                 .map(a -> new Action(a.getId(), a.getGameId(), a.getPlayerId(), a.getX(), a.getY(), a.getType(), a.getRound()))
                 .collect(Collectors.toCollection(ArrayList::new));
-        return new Game(entity.getGameId(), entity.getPlayerId(), entity.getOpponentId(), actions);
+        return new Game(entity.getId(), entity.getPlayerId(), entity.getOpponentId(), actions);
     }
 }
