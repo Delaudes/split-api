@@ -169,45 +169,31 @@ class GameFacadeTests {
     }
 
     @Test
-    void shouldStopAtFirstIncompleteRound() {
-        // Given
-        List<Action> actions = new ArrayList<>();
-        actions.addAll(completeRound(1));
-        actions.addAll(incompleteRound(2));
+    void shouldShowPlayerActionsEvenFromIncompleteRound() {
+        // Given — player has 2 PLACE in round 1, opponent has nothing
+        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, new ArrayList<>(incompleteRound(1)));
+
+        // When
+        FetchGameResponse response = gameFacade.fetchGameForPlayer(GAME_ID, PLAYER_ID);
+
+        // Then — player actions visible, opponent has none to show
+        assertEquals(2, response.playerActions().size());
+        assertEquals(0, response.opponentActions().size());
+    }
+
+    @Test
+    void shouldHideOpponentActionsFromIncompleteRound() {
+        // Given — round 1 complete for both, opponent starts round 2 but doesn't finish it
+        List<Action> actions = new ArrayList<>(completeRound(1));
+        actions.add(new Action("o-r2", GAME_ID, OPPONENT_ID, 5, 5, ActionType.PLACE, 2));
         fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, actions);
 
         // When
         FetchGameResponse response = gameFacade.fetchGameForPlayer(GAME_ID, PLAYER_ID);
 
-        // Then
+        // Then — player sees their round 1, opponent's round 2 is hidden
         assertEquals(5, response.playerActions().size());
         assertEquals(5, response.opponentActions().size());
-    }
-
-    @Test
-    void shouldReturnEmptyListsWhenFirstRoundIsIncomplete() {
-        // Given
-        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, incompleteRound(1));
-
-        // When
-        FetchGameResponse response = gameFacade.fetchGameForPlayer(GAME_ID, PLAYER_ID);
-
-        // Then
-        assertEquals(0, response.playerActions().size());
-        assertEquals(0, response.opponentActions().size());
-    }
-
-    @Test
-    void shouldReturnEmptyListsWhenRoundOneIsMissing() {
-        // Given — round 2 is complete but round 1 has no actions
-        fakeGameAdapter.game = new Game(GAME_ID, PLAYER_ID, OPPONENT_ID, completeRound(2));
-
-        // When
-        FetchGameResponse response = gameFacade.fetchGameForPlayer(GAME_ID, PLAYER_ID);
-
-        // Then — round 1 is empty so we stop immediately
-        assertEquals(0, response.playerActions().size());
-        assertEquals(0, response.opponentActions().size());
     }
 
     @Test
