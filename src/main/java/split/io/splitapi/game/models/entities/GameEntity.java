@@ -13,7 +13,7 @@ import java.util.List;
 public class GameEntity {
 
     @Id
-    private String gameId;
+    private String id;
 
     private String playerId;
 
@@ -22,14 +22,14 @@ public class GameEntity {
 
     @Setter
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "game_id", referencedColumnName = "game_id")
+    @JoinColumn(name = "game_id", referencedColumnName = "id")
     private List<ActionEntity> actions = new ArrayList<>();
 
     public GameEntity() {
     }
 
-    public GameEntity(String gameId, String playerId) {
-        this.gameId = gameId;
+    public GameEntity(String id, String playerId) {
+        this.id = id;
         this.playerId = playerId;
     }
 }

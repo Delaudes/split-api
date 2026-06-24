@@ -41,7 +41,7 @@ class JpaGameAdapterTests {
         adapter.create(game);
 
         // Then
-        assertEquals(game.id(), fakeGameRepository.savedGame.getGameId());
+        assertEquals(game.id(), fakeGameRepository.savedGame.getId());
         assertEquals(game.playerId(), fakeGameRepository.savedGame.getPlayerId());
         assertNull(fakeGameRepository.savedGame.getOpponentId());
     }
