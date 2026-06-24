@@ -1,6 +1,5 @@
 package split.io.splitapi.game.models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,29 +39,20 @@ public record Game(String id, String playerId, String opponentId, List<Action> a
     public GameView buildPlayerView(String requestingPlayerId) {
         String otherPlayerId = requestingPlayerId.equals(playerId) ? opponentId : playerId;
 
-        Map<Integer, List<Action>> actionsByRound = actions.stream()
+        List<Action> playerActions = actions.stream()
+                .filter(a -> a.playerId().equals(requestingPlayerId))
+                .toList();
+
+        Map<Integer, List<Action>> opponentActionsByRound = actions.stream()
+                .filter(a -> a.playerId().equals(otherPlayerId))
                 .collect(Collectors.groupingBy(Action::round));
 
-        List<Action> validPlayerActions = new ArrayList<>();
-        List<Action> validOpponentActions = new ArrayList<>();
+        List<Action> opponentActions = opponentActionsByRound.values().stream()
+                .filter(roundActions -> !isRoundIncomplete(roundActions))
+                .flatMap(List::stream)
+                .toList();
 
-        for (int round = 1; ; round++) {
-            List<Action> roundActions = actionsByRound.getOrDefault(round, List.of());
-
-            List<Action> pActions = roundActions.stream()
-                    .filter(a -> a.playerId().equals(requestingPlayerId)).toList();
-            List<Action> oActions = roundActions.stream()
-                    .filter(a -> a.playerId().equals(otherPlayerId)).toList();
-
-            if (isRoundIncomplete(pActions) || isRoundIncomplete(oActions)) {
-                break;
-            }
-
-            validPlayerActions.addAll(pActions);
-            validOpponentActions.addAll(oActions);
-        }
-
-        return new GameView(validPlayerActions, validOpponentActions);
+        return new GameView(playerActions, opponentActions);
     }
 
     private static boolean isRoundIncomplete(List<Action> actions) {
