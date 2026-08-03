@@ -1,0 +1,27 @@
+package split.io.splitapi.gohan.ingredients;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import split.io.splitapi.gohan.ingredients.models.outputs.IngredientsListResponse;
+
+@RestController
+@RequestMapping("/gohan/ingredients")
+@RequiredArgsConstructor
+@Validated
+public class IngredientsController {
+
+    private final IngredientsFacade ingredientsFacade;
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public IngredientsListResponse fetchAll(@RequestHeader("X-Device-Id") @NotBlank String deviceId) {
+        return ingredientsFacade.fetchAllByDevice(deviceId);
+    }
+}
