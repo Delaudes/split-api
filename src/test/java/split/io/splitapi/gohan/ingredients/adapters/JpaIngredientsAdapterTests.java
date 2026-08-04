@@ -41,4 +41,21 @@ class JpaIngredientsAdapterTests {
         assertEquals(expectedIngredients, ingredients);
         assertEquals(deviceId, fakeIngredientsRepository.findByDeviceIdParam);
     }
+
+    @Test
+    void shouldCreateIngredient() {
+        // Given
+        String deviceId = "fake-device-id";
+        Ingredient ingredient = new Ingredient("ingredient-1", deviceId, "Tomate", false, false);
+
+        // When
+        adapter.create(ingredient);
+
+        // Then
+        assertEquals(ingredient.id(), fakeIngredientsRepository.savedIngredient.getId());
+        assertEquals(ingredient.deviceId(), fakeIngredientsRepository.savedIngredient.getDeviceId());
+        assertEquals(ingredient.name(), fakeIngredientsRepository.savedIngredient.getName());
+        assertEquals(ingredient.inShoppingList(), fakeIngredientsRepository.savedIngredient.isInShoppingList());
+        assertEquals(ingredient.bought(), fakeIngredientsRepository.savedIngredient.isBought());
+    }
 }

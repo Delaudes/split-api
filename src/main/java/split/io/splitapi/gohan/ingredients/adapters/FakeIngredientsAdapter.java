@@ -10,10 +10,16 @@ public class FakeIngredientsAdapter implements IngredientsPort {
 
     public List<Ingredient> ingredients = new ArrayList<>();
     public String deviceId;
+    public Ingredient createdIngredient;
 
     @Override
     public List<Ingredient> fetchAllByDevice(String deviceId) {
         this.deviceId = deviceId;
         return ingredients;
+    }
+
+    @Override
+    public void create(Ingredient ingredient) {
+        this.createdIngredient = ingredient;
     }
 }

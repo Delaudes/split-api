@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IngredientsRepository {
     List<IngredientEntity> findByDeviceId(String deviceId);
+    void save(IngredientEntity ingredientEntity);
 }

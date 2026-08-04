@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.adapters.FakeIngredientsAdapter;
 import split.io.splitapi.gohan.ingredients.models.Ingredient;
+import split.io.splitapi.gohan.ingredients.models.inputs.CreateIngredientRequest;
 import split.io.splitapi.gohan.ingredients.models.outputs.IngredientResponse;
 import split.io.splitapi.gohan.ingredients.models.outputs.IngredientsListResponse;
+import split.io.splitapi.uuid.FakeUuidGenerator;
 
 import java.util.List;
 
@@ -15,13 +17,15 @@ class IngredientsFacadeTests {
 
     private IngredientsFacade ingredientsFacade;
     private FakeIngredientsAdapter fakeIngredientsAdapter;
+    private FakeUuidGenerator fakeUuidGenerator;
 
     @BeforeEach
     void setUp() {
         fakeIngredientsAdapter = new FakeIngredientsAdapter();
+        fakeUuidGenerator = new FakeUuidGenerator();
         IngredientsService ingredientsService = new IngredientsService(fakeIngredientsAdapter);
         IngredientsMapper ingredientsMapper = new IngredientsMapper();
-        ingredientsFacade = new IngredientsFacade(ingredientsService, ingredientsMapper);
+        ingredientsFacade = new IngredientsFacade(ingredientsService, ingredientsMapper, fakeUuidGenerator);
     }
 
     @Test
@@ -56,5 +60,22 @@ class IngredientsFacadeTests {
         // Then
         assertEquals(new IngredientsListResponse(List.of()), response);
         assertEquals(deviceId, fakeIngredientsAdapter.deviceId);
+    }
+
+    @Test
+    void shouldCreateIngredientWithGeneratedId() {
+        // Given
+        String deviceId = "fake-device-id";
+        String ingredientName = "Tomate";
+        CreateIngredientRequest request = new CreateIngredientRequest(ingredientName);
+        Ingredient expectedIngredient = new Ingredient(fakeUuidGenerator.uuid, deviceId, ingredientName, false, false);
+        IngredientResponse expectedResponse = new IngredientResponse(fakeUuidGenerator.uuid, ingredientName, false, false);
+
+        // When
+        IngredientResponse response = ingredientsFacade.create(request, deviceId);
+
+        // Then
+        assertEquals(expectedResponse, response);
+        assertEquals(expectedIngredient, fakeIngredientsAdapter.createdIngredient);
     }
 }

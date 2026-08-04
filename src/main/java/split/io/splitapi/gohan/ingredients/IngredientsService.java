@@ -13,4 +13,8 @@ public class IngredientsService {
     public List<Ingredient> fetchAllByDevice(String deviceId) {
         return ingredientsPort.fetchAllByDevice(deviceId);
     }
+
+    public void createIngredient(Ingredient ingredient) {
+        ingredientsPort.create(ingredient);
+    }
 }

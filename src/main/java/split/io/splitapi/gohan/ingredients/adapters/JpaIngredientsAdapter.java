@@ -22,6 +22,12 @@ public class JpaIngredientsAdapter implements IngredientsPort {
                 .toList();
     }
 
+    @Override
+    public void create(Ingredient ingredient) {
+        IngredientEntity entity = new IngredientEntity(ingredient.id(), ingredient.deviceId(), ingredient.name(), ingredient.inShoppingList(), ingredient.bought());
+        ingredientsRepository.save(entity);
+    }
+
     private Ingredient mapToIngredient(IngredientEntity entity) {
         return new Ingredient(entity.getId(), entity.getDeviceId(), entity.getName(), entity.isInShoppingList(), entity.isBought());
     }
