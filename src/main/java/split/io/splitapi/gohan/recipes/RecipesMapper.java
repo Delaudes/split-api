@@ -3,6 +3,7 @@ package split.io.splitapi.gohan.recipes;
 import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
 import split.io.splitapi.gohan.recipes.models.RecipeIngredient;
+import split.io.splitapi.gohan.recipes.models.inputs.CreateRecipeRequest;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeDetailResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeIngredientResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeResponse;
@@ -21,6 +22,10 @@ public class RecipesMapper {
 
     public RecipeResponse toRecipeResponse(Recipe recipe) {
         return new RecipeResponse(recipe.id(), recipe.name(), recipe.inMealsList(), recipe.done());
+    }
+
+    public Recipe toRecipe(CreateRecipeRequest request, String id, String deviceId) {
+        return new Recipe(id, deviceId, request.name(), false, false);
     }
 
     public RecipeDetailResponse toRecipeDetailResponse(RecipeDetail recipeDetail) {

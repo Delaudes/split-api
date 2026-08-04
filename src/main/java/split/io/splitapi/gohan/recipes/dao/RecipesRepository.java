@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface RecipesRepository {
     List<RecipeEntity> findByDeviceId(String deviceId);
     Optional<RecipeEntity> findById(String id);
+    void save(RecipeEntity recipeEntity);
 }

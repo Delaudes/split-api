@@ -79,4 +79,21 @@ class JpaRecipesAdapterTests {
         // Then
         assertThrows(RuntimeException.class, () -> adapter.fetchById(recipeId));
     }
+
+    @Test
+    void shouldSaveRecipe() {
+        // Given
+        String deviceId = "fake-device-id";
+        Recipe recipe = new Recipe("recipe-1", deviceId, "Curry", false, false);
+
+        // When
+        adapter.save(recipe);
+
+        // Then
+        assertEquals(recipe.id(), fakeRecipesRepository.savedRecipe.getId());
+        assertEquals(recipe.deviceId(), fakeRecipesRepository.savedRecipe.getDeviceId());
+        assertEquals(recipe.name(), fakeRecipesRepository.savedRecipe.getName());
+        assertEquals(recipe.inMealsList(), fakeRecipesRepository.savedRecipe.isInMealsList());
+        assertEquals(recipe.done(), fakeRecipesRepository.savedRecipe.isDone());
+    }
 }

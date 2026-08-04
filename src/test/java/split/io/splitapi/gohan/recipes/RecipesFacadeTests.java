@@ -6,10 +6,12 @@ import split.io.splitapi.gohan.recipes.adapters.FakeRecipesAdapter;
 import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
 import split.io.splitapi.gohan.recipes.models.RecipeIngredient;
+import split.io.splitapi.gohan.recipes.models.inputs.CreateRecipeRequest;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeDetailResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeIngredientResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipesListResponse;
+import split.io.splitapi.uuid.FakeUuidGenerator;
 
 import java.util.List;
 
@@ -19,13 +21,15 @@ class RecipesFacadeTests {
 
     private RecipesFacade recipesFacade;
     private FakeRecipesAdapter fakeRecipesAdapter;
+    private FakeUuidGenerator fakeUuidGenerator;
 
     @BeforeEach
     void setUp() {
         fakeRecipesAdapter = new FakeRecipesAdapter();
+        fakeUuidGenerator = new FakeUuidGenerator();
         RecipesService recipesService = new RecipesService(fakeRecipesAdapter);
         RecipesMapper recipesMapper = new RecipesMapper();
-        recipesFacade = new RecipesFacade(recipesService, recipesMapper);
+        recipesFacade = new RecipesFacade(recipesService, recipesMapper, fakeUuidGenerator);
     }
 
     @Test
@@ -81,5 +85,22 @@ class RecipesFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
+    }
+
+    @Test
+    void shouldCreateRecipeWithGeneratedId() {
+        // Given
+        String deviceId = "fake-device-id";
+        String recipeName = "Curry";
+        CreateRecipeRequest request = new CreateRecipeRequest(recipeName);
+        Recipe expectedRecipe = new Recipe(fakeUuidGenerator.uuid, deviceId, recipeName, false, false);
+        RecipeResponse expectedResponse = new RecipeResponse(fakeUuidGenerator.uuid, recipeName, false, false);
+
+        // When
+        RecipeResponse response = recipesFacade.create(request, deviceId);
+
+        // Then
+        assertEquals(expectedResponse, response);
+        assertEquals(expectedRecipe, fakeRecipesAdapter.savedRecipe);
     }
 }

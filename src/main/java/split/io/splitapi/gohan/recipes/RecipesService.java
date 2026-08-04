@@ -18,4 +18,8 @@ public class RecipesService {
     public RecipeDetail fetchById(String id) {
         return recipesPort.fetchById(id);
     }
+
+    public void createRecipe(Recipe recipe) {
+        recipesPort.save(recipe);
+    }
 }
