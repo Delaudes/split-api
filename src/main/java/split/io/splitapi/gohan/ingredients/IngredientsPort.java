@@ -8,4 +8,6 @@ public interface IngredientsPort {
     List<Ingredient> fetchAllByDevice(String deviceId);
     void save(Ingredient ingredient);
     Ingredient fetchById(String id);
+    boolean isUsedInRecipe(String id);
+    void delete(String id);
 }

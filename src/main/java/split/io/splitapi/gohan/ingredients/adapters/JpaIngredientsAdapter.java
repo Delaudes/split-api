@@ -6,6 +6,7 @@ import split.io.splitapi.gohan.ingredients.IngredientsPort;
 import split.io.splitapi.gohan.ingredients.dao.IngredientsRepository;
 import split.io.splitapi.gohan.ingredients.models.Ingredient;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
+import split.io.splitapi.gohan.recipes.dao.RecipeIngredientsRepository;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class JpaIngredientsAdapter implements IngredientsPort {
 
     private final IngredientsRepository ingredientsRepository;
+    private final RecipeIngredientsRepository recipeIngredientsRepository;
 
     @Override
     public List<Ingredient> fetchAllByDevice(String deviceId) {
@@ -33,6 +35,16 @@ public class JpaIngredientsAdapter implements IngredientsPort {
         IngredientEntity entity = ingredientsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found with id: " + id));
         return mapToIngredient(entity);
+    }
+
+    @Override
+    public boolean isUsedInRecipe(String id) {
+        return recipeIngredientsRepository.existsByIngredient_Id(id);
+    }
+
+    @Override
+    public void delete(String id) {
+        ingredientsRepository.deleteById(id);
     }
 
     private Ingredient mapToIngredient(IngredientEntity entity) {

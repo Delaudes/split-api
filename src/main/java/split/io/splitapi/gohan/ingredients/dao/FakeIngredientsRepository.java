@@ -13,6 +13,7 @@ public class FakeIngredientsRepository implements IngredientsRepository {
     public IngredientEntity savedIngredient;
     public String findByIdParam;
     public IngredientEntity ingredientToReturn;
+    public String deletedIngredientId;
 
     @Override
     public List<IngredientEntity> findByDeviceId(String deviceId) {
@@ -29,5 +30,10 @@ public class FakeIngredientsRepository implements IngredientsRepository {
     public Optional<IngredientEntity> findById(String id) {
         this.findByIdParam = id;
         return Optional.ofNullable(ingredientToReturn);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        this.deletedIngredientId = id;
     }
 }

@@ -13,6 +13,9 @@ public class FakeIngredientsAdapter implements IngredientsPort {
     public Ingredient savedIngredient;
     public Ingredient ingredientToReturn;
     public String fetchByIdParam;
+    public boolean isUsedInRecipeResult = false;
+    public String isUsedInRecipeParam;
+    public String deletedIngredientId;
 
     @Override
     public List<Ingredient> fetchAllByDevice(String deviceId) {
@@ -29,5 +32,16 @@ public class FakeIngredientsAdapter implements IngredientsPort {
     public Ingredient fetchById(String id) {
         this.fetchByIdParam = id;
         return ingredientToReturn;
+    }
+
+    @Override
+    public boolean isUsedInRecipe(String id) {
+        this.isUsedInRecipeParam = id;
+        return isUsedInRecipeResult;
+    }
+
+    @Override
+    public void delete(String id) {
+        this.deletedIngredientId = id;
     }
 }

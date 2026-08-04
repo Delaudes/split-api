@@ -112,6 +112,43 @@ class IngredientsFacadeTests {
         assertTrue(response.inShoppingList());
     }
 
+    @Test
+    void shouldDeleteIngredientWhenNotInShoppingListAndNotUsedInRecipe() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, false);
+        fakeIngredientsAdapter.isUsedInRecipeResult = false;
+
+        // When
+        ingredientsFacade.delete(ingredientId);
+
+        // Then
+        assertEquals(ingredientId, fakeIngredientsAdapter.deletedIngredientId);
+    }
+
+    @Test
+    void shouldThrowConflictWhenDeletingIngredientInShoppingList() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", true, false);
+
+        // Then
+        assertThrows(IngredientInUseException.class, () -> ingredientsFacade.delete(ingredientId));
+        assertNull(fakeIngredientsAdapter.deletedIngredientId);
+    }
+
+    @Test
+    void shouldThrowConflictWhenDeletingIngredientUsedInRecipe() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, false);
+        fakeIngredientsAdapter.isUsedInRecipeResult = true;
+
+        // Then
+        assertThrows(IngredientInUseException.class, () -> ingredientsFacade.delete(ingredientId));
+        assertNull(fakeIngredientsAdapter.deletedIngredientId);
+    }
+
     private static IngredientResponse ingredientsMapperResponseOf(Ingredient ingredient) {
         return new IngredientResponse(ingredient.id(), ingredient.name(), ingredient.inShoppingList(), ingredient.bought());
     }

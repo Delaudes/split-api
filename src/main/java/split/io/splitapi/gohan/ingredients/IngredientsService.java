@@ -24,4 +24,12 @@ public class IngredientsService {
         ingredientsPort.save(updated);
         return updated;
     }
+
+    public void deleteIngredient(String id) {
+        Ingredient ingredient = ingredientsPort.fetchById(id);
+        if (ingredient.inShoppingList() || ingredientsPort.isUsedInRecipe(id)) {
+            throw new IngredientInUseException("Ingredient is in the shopping list or used in a recipe: " + id);
+        }
+        ingredientsPort.delete(id);
+    }
 }

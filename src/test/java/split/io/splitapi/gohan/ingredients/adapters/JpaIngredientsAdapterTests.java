@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.dao.FakeIngredientsRepository;
 import split.io.splitapi.gohan.ingredients.models.Ingredient;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
+import split.io.splitapi.gohan.recipes.dao.FakeRecipeIngredientsRepository;
 
 import java.util.List;
 
@@ -14,11 +15,13 @@ class JpaIngredientsAdapterTests {
 
     private JpaIngredientsAdapter adapter;
     private FakeIngredientsRepository fakeIngredientsRepository;
+    private FakeRecipeIngredientsRepository fakeRecipeIngredientsRepository;
 
     @BeforeEach
     void setUp() {
         fakeIngredientsRepository = new FakeIngredientsRepository();
-        adapter = new JpaIngredientsAdapter(fakeIngredientsRepository);
+        fakeRecipeIngredientsRepository = new FakeRecipeIngredientsRepository();
+        adapter = new JpaIngredientsAdapter(fakeIngredientsRepository, fakeRecipeIngredientsRepository);
     }
 
     @Test
@@ -81,5 +84,31 @@ class JpaIngredientsAdapterTests {
 
         // Then
         assertThrows(RuntimeException.class, () -> adapter.fetchById(ingredientId));
+    }
+
+    @Test
+    void shouldReturnWhetherIngredientIsUsedInRecipe() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeRecipeIngredientsRepository.existsByIngredientIdResult = true;
+
+        // When
+        boolean isUsed = adapter.isUsedInRecipe(ingredientId);
+
+        // Then
+        assertTrue(isUsed);
+        assertEquals(ingredientId, fakeRecipeIngredientsRepository.existsByIngredientIdParam);
+    }
+
+    @Test
+    void shouldDeleteIngredient() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+
+        // When
+        adapter.delete(ingredientId);
+
+        // Then
+        assertEquals(ingredientId, fakeIngredientsRepository.deletedIngredientId);
     }
 }

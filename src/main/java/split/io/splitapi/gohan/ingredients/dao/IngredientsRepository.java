@@ -9,4 +9,5 @@ public interface IngredientsRepository {
     List<IngredientEntity> findByDeviceId(String deviceId);
     void save(IngredientEntity ingredientEntity);
     Optional<IngredientEntity> findById(String id);
+    void deleteById(String id);
 }

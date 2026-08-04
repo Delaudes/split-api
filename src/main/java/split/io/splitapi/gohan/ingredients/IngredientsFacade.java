@@ -33,4 +33,8 @@ public class IngredientsFacade {
         Ingredient updated = ingredientsService.updateIngredient(id, request.name(), request.inShoppingList(), request.bought());
         return ingredientsMapper.toIngredientResponse(updated);
     }
+
+    public void delete(String id) {
+        ingredientsService.deleteIngredient(id);
+    }
 }
