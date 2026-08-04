@@ -23,9 +23,16 @@ public class JpaIngredientsAdapter implements IngredientsPort {
     }
 
     @Override
-    public void create(Ingredient ingredient) {
+    public void save(Ingredient ingredient) {
         IngredientEntity entity = new IngredientEntity(ingredient.id(), ingredient.deviceId(), ingredient.name(), ingredient.inShoppingList(), ingredient.bought());
         ingredientsRepository.save(entity);
+    }
+
+    @Override
+    public Ingredient fetchById(String id) {
+        IngredientEntity entity = ingredientsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ingredient not found with id: " + id));
+        return mapToIngredient(entity);
     }
 
     private Ingredient mapToIngredient(IngredientEntity entity) {

@@ -43,13 +43,13 @@ class JpaIngredientsAdapterTests {
     }
 
     @Test
-    void shouldCreateIngredient() {
+    void shouldSaveIngredient() {
         // Given
         String deviceId = "fake-device-id";
         Ingredient ingredient = new Ingredient("ingredient-1", deviceId, "Tomate", false, false);
 
         // When
-        adapter.create(ingredient);
+        adapter.save(ingredient);
 
         // Then
         assertEquals(ingredient.id(), fakeIngredientsRepository.savedIngredient.getId());
@@ -57,5 +57,29 @@ class JpaIngredientsAdapterTests {
         assertEquals(ingredient.name(), fakeIngredientsRepository.savedIngredient.getName());
         assertEquals(ingredient.inShoppingList(), fakeIngredientsRepository.savedIngredient.isInShoppingList());
         assertEquals(ingredient.bought(), fakeIngredientsRepository.savedIngredient.isBought());
+    }
+
+    @Test
+    void shouldFetchIngredientById() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsRepository.ingredientToReturn = new IngredientEntity(ingredientId, "fake-device-id", "Tomate", true, false);
+        Ingredient expectedIngredient = new Ingredient(ingredientId, "fake-device-id", "Tomate", true, false);
+
+        // When
+        Ingredient ingredient = adapter.fetchById(ingredientId);
+
+        // Then
+        assertEquals(expectedIngredient, ingredient);
+        assertEquals(ingredientId, fakeIngredientsRepository.findByIdParam);
+    }
+
+    @Test
+    void shouldThrowWhenIngredientToFetchNotFound() {
+        // Given
+        String ingredientId = "unknown-ingredient-id";
+
+        // Then
+        assertThrows(RuntimeException.class, () -> adapter.fetchById(ingredientId));
     }
 }

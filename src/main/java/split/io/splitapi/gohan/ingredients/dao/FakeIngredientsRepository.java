@@ -4,12 +4,15 @@ import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FakeIngredientsRepository implements IngredientsRepository {
 
     public List<IngredientEntity> ingredientsToReturn = new ArrayList<>();
     public String findByDeviceIdParam;
     public IngredientEntity savedIngredient;
+    public String findByIdParam;
+    public IngredientEntity ingredientToReturn;
 
     @Override
     public List<IngredientEntity> findByDeviceId(String deviceId) {
@@ -20,5 +23,11 @@ public class FakeIngredientsRepository implements IngredientsRepository {
     @Override
     public void save(IngredientEntity ingredientEntity) {
         this.savedIngredient = ingredientEntity;
+    }
+
+    @Override
+    public Optional<IngredientEntity> findById(String id) {
+        this.findByIdParam = id;
+        return Optional.ofNullable(ingredientToReturn);
     }
 }

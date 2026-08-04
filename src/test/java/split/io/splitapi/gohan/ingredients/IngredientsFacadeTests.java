@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.adapters.FakeIngredientsAdapter;
 import split.io.splitapi.gohan.ingredients.models.Ingredient;
 import split.io.splitapi.gohan.ingredients.models.inputs.CreateIngredientRequest;
+import split.io.splitapi.gohan.ingredients.models.inputs.PatchIngredientRequest;
 import split.io.splitapi.gohan.ingredients.models.outputs.IngredientResponse;
 import split.io.splitapi.gohan.ingredients.models.outputs.IngredientsListResponse;
 import split.io.splitapi.uuid.FakeUuidGenerator;
@@ -76,6 +77,42 @@ class IngredientsFacadeTests {
 
         // Then
         assertEquals(expectedResponse, response);
-        assertEquals(expectedIngredient, fakeIngredientsAdapter.createdIngredient);
+        assertEquals(expectedIngredient, fakeIngredientsAdapter.savedIngredient);
+    }
+
+    @Test
+    void shouldUpdateOnlyProvidedFields() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, false);
+        PatchIngredientRequest request = new PatchIngredientRequest(null, true, null);
+        IngredientResponse expectedResponse = new IngredientResponse(ingredientId, "Tomate", true, false);
+
+        // When
+        IngredientResponse response = ingredientsFacade.update(ingredientId, request);
+
+        // Then
+        assertEquals(expectedResponse, response);
+        assertEquals(ingredientId, fakeIngredientsAdapter.fetchByIdParam);
+        assertEquals(expectedResponse, ingredientsMapperResponseOf(fakeIngredientsAdapter.savedIngredient));
+    }
+
+    @Test
+    void shouldForceBoughtFalseWhenInShoppingListSetToTrue() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, true);
+        PatchIngredientRequest request = new PatchIngredientRequest(null, true, null);
+
+        // When
+        IngredientResponse response = ingredientsFacade.update(ingredientId, request);
+
+        // Then
+        assertFalse(response.bought());
+        assertTrue(response.inShoppingList());
+    }
+
+    private static IngredientResponse ingredientsMapperResponseOf(Ingredient ingredient) {
+        return new IngredientResponse(ingredient.id(), ingredient.name(), ingredient.inShoppingList(), ingredient.bought());
     }
 }

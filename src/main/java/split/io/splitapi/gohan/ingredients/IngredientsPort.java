@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface IngredientsPort {
     List<Ingredient> fetchAllByDevice(String deviceId);
-    void create(Ingredient ingredient);
+    void save(Ingredient ingredient);
+    Ingredient fetchById(String id);
 }

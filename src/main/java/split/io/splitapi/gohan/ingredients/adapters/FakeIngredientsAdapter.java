@@ -10,7 +10,9 @@ public class FakeIngredientsAdapter implements IngredientsPort {
 
     public List<Ingredient> ingredients = new ArrayList<>();
     public String deviceId;
-    public Ingredient createdIngredient;
+    public Ingredient savedIngredient;
+    public Ingredient ingredientToReturn;
+    public String fetchByIdParam;
 
     @Override
     public List<Ingredient> fetchAllByDevice(String deviceId) {
@@ -19,7 +21,13 @@ public class FakeIngredientsAdapter implements IngredientsPort {
     }
 
     @Override
-    public void create(Ingredient ingredient) {
-        this.createdIngredient = ingredient;
+    public void save(Ingredient ingredient) {
+        this.savedIngredient = ingredient;
+    }
+
+    @Override
+    public Ingredient fetchById(String id) {
+        this.fetchByIdParam = id;
+        return ingredientToReturn;
     }
 }
