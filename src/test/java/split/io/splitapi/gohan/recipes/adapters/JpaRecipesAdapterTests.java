@@ -3,6 +3,7 @@ package split.io.splitapi.gohan.recipes.adapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
+import split.io.splitapi.gohan.recipes.dao.FakeIngredientsLookupRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipesRepository;
 import split.io.splitapi.gohan.recipes.models.Recipe;
@@ -20,12 +21,14 @@ class JpaRecipesAdapterTests {
     private JpaRecipesAdapter adapter;
     private FakeRecipesRepository fakeRecipesRepository;
     private FakeRecipeIngredientsRepository fakeRecipeIngredientsRepository;
+    private FakeIngredientsLookupRepository fakeIngredientsLookupRepository;
 
     @BeforeEach
     void setUp() {
         fakeRecipesRepository = new FakeRecipesRepository();
         fakeRecipeIngredientsRepository = new FakeRecipeIngredientsRepository();
-        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository);
+        fakeIngredientsLookupRepository = new FakeIngredientsLookupRepository();
+        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository, fakeIngredientsLookupRepository);
     }
 
     @Test
@@ -55,11 +58,13 @@ class JpaRecipesAdapterTests {
         String recipeId = "fake-recipe-id";
         String deviceId = "fake-device-id";
         RecipeEntity recipeEntity = new RecipeEntity(recipeId, deviceId, "Curry", true, false);
-        IngredientEntity ingredient1 = new IngredientEntity("ingredient-1", deviceId, "Riz", false, false);
-        IngredientEntity ingredient2 = new IngredientEntity("ingredient-2", deviceId, "Poulet", false, true);
-        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-1", recipeId, ingredient1, true));
-        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-2", recipeId, ingredient2, false));
+        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-1", recipeId, "ingredient-1", true));
+        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-2", recipeId, "ingredient-2", false));
         fakeRecipesRepository.recipeToReturn = recipeEntity;
+        fakeIngredientsLookupRepository.ingredientsToReturn = List.of(
+                new IngredientEntity("ingredient-1", deviceId, "Riz", false, false),
+                new IngredientEntity("ingredient-2", deviceId, "Poulet", false, true)
+        );
 
         RecipeDetail expectedDetail = new RecipeDetail(recipeId, "Curry", true, false, List.of(
                 new RecipeIngredient("ingredient-1", "Riz", true),
@@ -72,6 +77,7 @@ class JpaRecipesAdapterTests {
         // Then
         assertEquals(expectedDetail, detail);
         assertEquals(recipeId, fakeRecipesRepository.findByIdParam);
+        assertEquals(List.of("ingredient-1", "ingredient-2"), fakeIngredientsLookupRepository.findAllByIdParam);
     }
 
     @Test
@@ -126,5 +132,22 @@ class JpaRecipesAdapterTests {
 
         // Then
         assertEquals(recipeId, fakeRecipeIngredientsRepository.resetBoughtByRecipeIdParam);
+    }
+
+    @Test
+    void shouldAttachIngredientToRecipe() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+        String recipeIngredientId = "fake-recipe-ingredient-id";
+
+        // When
+        adapter.attachIngredient(recipeId, ingredientId, recipeIngredientId);
+
+        // Then
+        assertEquals(recipeIngredientId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getId());
+        assertEquals(recipeId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getRecipeId());
+        assertEquals(ingredientId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getIngredientId());
+        assertFalse(fakeRecipeIngredientsRepository.savedRecipeIngredient.isBought());
     }
 }

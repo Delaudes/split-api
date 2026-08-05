@@ -32,4 +32,9 @@ public class RecipesService {
         }
         return updated;
     }
+
+    public RecipeDetail addIngredientToRecipe(String recipeId, String ingredientId, String recipeIngredientId) {
+        recipesPort.attachIngredient(recipeId, ingredientId, recipeIngredientId);
+        return recipesPort.fetchById(recipeId);
+    }
 }

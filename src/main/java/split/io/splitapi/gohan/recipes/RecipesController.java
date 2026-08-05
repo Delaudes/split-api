@@ -51,4 +51,10 @@ public class RecipesController {
     public RecipeDetailResponse update(@PathVariable @NotBlank String id, @RequestBody PatchRecipeRequest request) {
         return recipesFacade.update(id, request);
     }
+
+    @PostMapping("/{id}/ingredients/{ingredientId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public RecipeDetailResponse addIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
+        return recipesFacade.addIngredient(id, ingredientId);
+    }
 }

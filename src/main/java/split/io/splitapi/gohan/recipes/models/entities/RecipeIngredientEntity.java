@@ -1,9 +1,11 @@
 package split.io.splitapi.gohan.recipes.models.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 
 @Getter
 @Entity
@@ -16,9 +18,8 @@ public class RecipeIngredientEntity {
     @Column(name = "recipe_id")
     private String recipeId;
 
-    @ManyToOne
-    @JoinColumn(name = "ingredient_id")
-    private IngredientEntity ingredient;
+    @Column(name = "ingredient_id")
+    private String ingredientId;
 
     @Setter
     private boolean bought;
@@ -26,10 +27,10 @@ public class RecipeIngredientEntity {
     public RecipeIngredientEntity() {
     }
 
-    public RecipeIngredientEntity(String id, String recipeId, IngredientEntity ingredient, boolean bought) {
+    public RecipeIngredientEntity(String id, String recipeId, String ingredientId, boolean bought) {
         this.id = id;
         this.recipeId = recipeId;
-        this.ingredient = ingredient;
+        this.ingredientId = ingredientId;
         this.bought = bought;
     }
 }

@@ -40,4 +40,10 @@ public class RecipesFacade {
         RecipeDetail updated = recipesService.updateRecipe(id, request.name(), request.inMealsList(), request.done());
         return recipesMapper.toRecipeDetailResponse(updated);
     }
+
+    public RecipeDetailResponse addIngredient(String recipeId, String ingredientId) {
+        String recipeIngredientId = uuidGenerator.generate();
+        RecipeDetail updated = recipesService.addIngredientToRecipe(recipeId, ingredientId, recipeIngredientId);
+        return recipesMapper.toRecipeDetailResponse(updated);
+    }
 }

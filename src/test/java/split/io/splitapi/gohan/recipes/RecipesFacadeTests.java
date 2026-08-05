@@ -199,4 +199,26 @@ class RecipesFacadeTests {
         // Then
         assertNull(fakeRecipesAdapter.resetIngredientsBoughtParam);
     }
+
+    @Test
+    void shouldAttachIngredientToRecipeWithGeneratedId() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of(
+                new RecipeIngredient(ingredientId, "Riz", false)
+        ));
+        RecipeDetailResponse expectedResponse = new RecipeDetailResponse(recipeId, "Curry", false, false, List.of(
+                new RecipeIngredientResponse(ingredientId, "Riz", false)
+        ));
+
+        // When
+        RecipeDetailResponse response = recipesFacade.addIngredient(recipeId, ingredientId);
+
+        // Then
+        assertEquals(expectedResponse, response);
+        assertEquals(recipeId, fakeRecipesAdapter.attachIngredientRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipesAdapter.attachIngredientIngredientIdParam);
+        assertEquals(fakeUuidGenerator.uuid, fakeRecipesAdapter.attachIngredientRecipeIngredientIdParam);
+    }
 }

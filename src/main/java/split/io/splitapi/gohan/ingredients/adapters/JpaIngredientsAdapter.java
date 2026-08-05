@@ -39,7 +39,7 @@ public class JpaIngredientsAdapter implements IngredientsPort {
 
     @Override
     public boolean isUsedInRecipe(String id) {
-        return recipeIngredientsRepository.existsByIngredient_Id(id);
+        return recipeIngredientsRepository.existsByIngredientId(id);
     }
 
     @Override
