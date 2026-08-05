@@ -3,6 +3,7 @@ package split.io.splitapi.gohan.recipes.adapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
+import split.io.splitapi.gohan.recipes.dao.FakeRecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipesRepository;
 import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
@@ -18,11 +19,13 @@ class JpaRecipesAdapterTests {
 
     private JpaRecipesAdapter adapter;
     private FakeRecipesRepository fakeRecipesRepository;
+    private FakeRecipeIngredientsRepository fakeRecipeIngredientsRepository;
 
     @BeforeEach
     void setUp() {
         fakeRecipesRepository = new FakeRecipesRepository();
-        adapter = new JpaRecipesAdapter(fakeRecipesRepository);
+        fakeRecipeIngredientsRepository = new FakeRecipeIngredientsRepository();
+        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository);
     }
 
     @Test
@@ -95,5 +98,33 @@ class JpaRecipesAdapterTests {
         assertEquals(recipe.name(), fakeRecipesRepository.savedRecipe.getName());
         assertEquals(recipe.inMealsList(), fakeRecipesRepository.savedRecipe.isInMealsList());
         assertEquals(recipe.done(), fakeRecipesRepository.savedRecipe.isDone());
+    }
+
+    @Test
+    void shouldUpdateRecipeFields() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        RecipeDetail recipeDetail = new RecipeDetail(recipeId, "Curry maison", true, false, List.of());
+
+        // When
+        adapter.update(recipeDetail);
+
+        // Then
+        assertEquals(recipeId, fakeRecipesRepository.updateFieldsId);
+        assertEquals("Curry maison", fakeRecipesRepository.updateFieldsName);
+        assertTrue(fakeRecipesRepository.updateFieldsInMealsList);
+        assertFalse(fakeRecipesRepository.updateFieldsDone);
+    }
+
+    @Test
+    void shouldResetIngredientsBoughtForRecipe() {
+        // Given
+        String recipeId = "fake-recipe-id";
+
+        // When
+        adapter.resetIngredientsBought(recipeId);
+
+        // Then
+        assertEquals(recipeId, fakeRecipeIngredientsRepository.resetBoughtByRecipeIdParam);
     }
 }

@@ -81,12 +81,27 @@ class IngredientsFacadeTests {
     }
 
     @Test
-    void shouldUpdateOnlyProvidedFields() {
+    void shouldNotChangeAnythingWhenNoFieldsProvided() {
         // Given
         String ingredientId = "fake-ingredient-id";
-        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, false);
-        PatchIngredientRequest request = new PatchIngredientRequest(null, true, null);
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", true, false);
+        PatchIngredientRequest request = new PatchIngredientRequest(null, null, null);
         IngredientResponse expectedResponse = new IngredientResponse(ingredientId, "Tomate", true, false);
+
+        // When
+        IngredientResponse response = ingredientsFacade.update(ingredientId, request);
+
+        // Then
+        assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void shouldUpdateEveryField() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", true, false);
+        PatchIngredientRequest request = new PatchIngredientRequest("Tomate cerise", false, true);
+        IngredientResponse expectedResponse = new IngredientResponse(ingredientId, "Tomate cerise", false, true);
 
         // When
         IngredientResponse response = ingredientsFacade.update(ingredientId, request);
@@ -110,6 +125,21 @@ class IngredientsFacadeTests {
         // Then
         assertFalse(response.bought());
         assertTrue(response.inShoppingList());
+    }
+
+    @Test
+    void shouldNotForceBoughtWhenInShoppingListSetToFalse() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", true, false);
+        PatchIngredientRequest request = new PatchIngredientRequest(null, false, true);
+
+        // When
+        IngredientResponse response = ingredientsFacade.update(ingredientId, request);
+
+        // Then
+        assertFalse(response.inShoppingList());
+        assertTrue(response.bought());
     }
 
     @Test

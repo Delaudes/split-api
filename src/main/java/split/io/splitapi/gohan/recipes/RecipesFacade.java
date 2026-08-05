@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
 import split.io.splitapi.gohan.recipes.models.inputs.CreateRecipeRequest;
+import split.io.splitapi.gohan.recipes.models.inputs.PatchRecipeRequest;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeDetailResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipesListResponse;
@@ -33,5 +34,10 @@ public class RecipesFacade {
         Recipe recipe = recipesMapper.toRecipe(request, id, deviceId);
         recipesService.createRecipe(recipe);
         return recipesMapper.toRecipeResponse(recipe);
+    }
+
+    public RecipeDetailResponse update(String id, PatchRecipeRequest request) {
+        RecipeDetail updated = recipesService.updateRecipe(id, request.name(), request.inMealsList(), request.done());
+        return recipesMapper.toRecipeDetailResponse(updated);
     }
 }

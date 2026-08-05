@@ -9,4 +9,6 @@ public interface RecipesPort {
     List<Recipe> fetchAllByDevice(String deviceId);
     RecipeDetail fetchById(String id);
     void save(Recipe recipe);
+    void update(RecipeDetail recipeDetail);
+    void resetIngredientsBought(String recipeId);
 }

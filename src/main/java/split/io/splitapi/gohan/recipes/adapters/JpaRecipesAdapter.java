@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 import split.io.splitapi.gohan.recipes.RecipesPort;
+import split.io.splitapi.gohan.recipes.dao.RecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.RecipesRepository;
 import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
@@ -18,6 +19,7 @@ import java.util.List;
 public class JpaRecipesAdapter implements RecipesPort {
 
     private final RecipesRepository recipesRepository;
+    private final RecipeIngredientsRepository recipeIngredientsRepository;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -40,6 +42,16 @@ public class JpaRecipesAdapter implements RecipesPort {
     public void save(Recipe recipe) {
         RecipeEntity entity = new RecipeEntity(recipe.id(), recipe.deviceId(), recipe.name(), recipe.inMealsList(), recipe.done());
         recipesRepository.save(entity);
+    }
+
+    @Override
+    public void update(RecipeDetail recipeDetail) {
+        recipesRepository.updateFields(recipeDetail.id(), recipeDetail.name(), recipeDetail.inMealsList(), recipeDetail.done());
+    }
+
+    @Override
+    public void resetIngredientsBought(String recipeId) {
+        recipeIngredientsRepository.resetBoughtByRecipeId(recipeId);
     }
 
     private RecipeIngredient mapToRecipeIngredient(RecipeIngredientEntity recipeIngredientEntity) {

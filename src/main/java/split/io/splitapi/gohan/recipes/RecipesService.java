@@ -22,4 +22,14 @@ public class RecipesService {
     public void createRecipe(Recipe recipe) {
         recipesPort.save(recipe);
     }
+
+    public RecipeDetail updateRecipe(String id, String name, Boolean inMealsList, Boolean done) {
+        RecipeDetail current = recipesPort.fetchById(id);
+        RecipeDetail updated = current.applyPatch(name, inMealsList, done);
+        recipesPort.update(updated);
+        if (Boolean.TRUE.equals(inMealsList) && current.hasIngredientsBought()) {
+            recipesPort.resetIngredientsBought(id);
+        }
+        return updated;
+    }
 }

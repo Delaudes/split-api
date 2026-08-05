@@ -14,6 +14,8 @@ public class FakeRecipesAdapter implements RecipesPort {
     public RecipeDetail recipeDetailToReturn;
     public String fetchByIdParam;
     public Recipe savedRecipe;
+    public RecipeDetail updatedRecipeDetail;
+    public String resetIngredientsBoughtParam;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -30,5 +32,15 @@ public class FakeRecipesAdapter implements RecipesPort {
     @Override
     public void save(Recipe recipe) {
         this.savedRecipe = recipe;
+    }
+
+    @Override
+    public void update(RecipeDetail recipeDetail) {
+        this.updatedRecipeDetail = recipeDetail;
+    }
+
+    @Override
+    public void resetIngredientsBought(String recipeId) {
+        this.resetIngredientsBoughtParam = recipeId;
     }
 }
