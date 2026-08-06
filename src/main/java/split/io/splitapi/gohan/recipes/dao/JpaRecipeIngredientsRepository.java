@@ -18,4 +18,9 @@ public interface JpaRecipeIngredientsRepository extends Repository<RecipeIngredi
     @Transactional
     @Query("UPDATE RecipeIngredientEntity ri SET ri.bought = :bought WHERE ri.recipeId = :recipeId AND ri.ingredientId = :ingredientId")
     void updateBought(@Param("recipeId") String recipeId, @Param("ingredientId") String ingredientId, @Param("bought") boolean bought);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM RecipeIngredientEntity ri WHERE ri.recipeId = :recipeId AND ri.ingredientId = :ingredientId")
+    void deleteByRecipeIdAndIngredientId(@Param("recipeId") String recipeId, @Param("ingredientId") String ingredientId);
 }

@@ -246,4 +246,18 @@ class RecipesFacadeTests {
         assertTrue(fakeRecipesAdapter.updateIngredientBoughtParam);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
     }
+
+    @Test
+    void shouldDetachIngredient() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+
+        // When
+        recipesFacade.detachIngredient(recipeId, ingredientId);
+
+        // Then
+        assertEquals(recipeId, fakeRecipesAdapter.detachIngredientRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipesAdapter.detachIngredientIngredientIdParam);
+    }
 }

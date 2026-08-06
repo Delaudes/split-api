@@ -7,4 +7,5 @@ public interface RecipeIngredientsRepository {
     void resetBoughtByRecipeId(String recipeId);
     void save(RecipeIngredientEntity recipeIngredientEntity);
     void updateBought(String recipeId, String ingredientId, boolean bought);
+    void deleteByRecipeIdAndIngredientId(String recipeId, String ingredientId);
 }

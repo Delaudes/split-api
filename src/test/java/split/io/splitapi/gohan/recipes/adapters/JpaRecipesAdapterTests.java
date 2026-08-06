@@ -165,4 +165,18 @@ class JpaRecipesAdapterTests {
         assertEquals(ingredientId, fakeRecipeIngredientsRepository.updateBoughtIngredientIdParam);
         assertTrue(fakeRecipeIngredientsRepository.updateBoughtParam);
     }
+
+    @Test
+    void shouldDetachIngredientFromRecipe() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+
+        // When
+        adapter.detachIngredient(recipeId, ingredientId);
+
+        // Then
+        assertEquals(recipeId, fakeRecipeIngredientsRepository.deleteRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipeIngredientsRepository.deleteIngredientIdParam);
+    }
 }

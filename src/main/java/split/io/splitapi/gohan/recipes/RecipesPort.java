@@ -13,4 +13,5 @@ public interface RecipesPort {
     void resetIngredientsBought(String recipeId);
     void attachIngredient(String recipeId, String ingredientId, String recipeIngredientId);
     void updateIngredientBought(String recipeId, String ingredientId, boolean bought);
+    void detachIngredient(String recipeId, String ingredientId);
 }

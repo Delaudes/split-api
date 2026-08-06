@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,5 +64,11 @@ public class RecipesController {
     @ResponseStatus(HttpStatus.OK)
     public RecipeDetailResponse updateIngredientBought(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId, @Valid @RequestBody PatchRecipeIngredientRequest request) {
         return recipesFacade.updateIngredientBought(id, ingredientId, request);
+    }
+
+    @DeleteMapping("/{id}/ingredients/{ingredientId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void detachIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
+        recipesFacade.detachIngredient(id, ingredientId);
     }
 }

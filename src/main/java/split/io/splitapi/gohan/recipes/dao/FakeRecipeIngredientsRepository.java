@@ -11,6 +11,8 @@ public class FakeRecipeIngredientsRepository implements RecipeIngredientsReposit
     public String updateBoughtRecipeIdParam;
     public String updateBoughtIngredientIdParam;
     public Boolean updateBoughtParam;
+    public String deleteRecipeIdParam;
+    public String deleteIngredientIdParam;
 
     @Override
     public boolean existsByIngredientId(String ingredientId) {
@@ -33,5 +35,11 @@ public class FakeRecipeIngredientsRepository implements RecipeIngredientsReposit
         this.updateBoughtRecipeIdParam = recipeId;
         this.updateBoughtIngredientIdParam = ingredientId;
         this.updateBoughtParam = bought;
+    }
+
+    @Override
+    public void deleteByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
+        this.deleteRecipeIdParam = recipeId;
+        this.deleteIngredientIdParam = ingredientId;
     }
 }

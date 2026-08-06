@@ -42,4 +42,8 @@ public class RecipesService {
         recipesPort.updateIngredientBought(recipeId, ingredientId, bought);
         return recipesPort.fetchById(recipeId);
     }
+
+    public void detachIngredientFromRecipe(String recipeId, String ingredientId) {
+        recipesPort.detachIngredient(recipeId, ingredientId);
+    }
 }

@@ -52,4 +52,8 @@ public class RecipesFacade {
         RecipeDetail updated = recipesService.updateIngredientBought(recipeId, ingredientId, request.bought());
         return recipesMapper.toRecipeDetailResponse(updated);
     }
+
+    public void detachIngredient(String recipeId, String ingredientId) {
+        recipesService.detachIngredientFromRecipe(recipeId, ingredientId);
+    }
 }

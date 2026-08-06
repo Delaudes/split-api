@@ -22,6 +22,8 @@ public class FakeRecipesAdapter implements RecipesPort {
     public String updateIngredientBoughtRecipeIdParam;
     public String updateIngredientBoughtIngredientIdParam;
     public Boolean updateIngredientBoughtParam;
+    public String detachIngredientRecipeIdParam;
+    public String detachIngredientIngredientIdParam;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -62,5 +64,11 @@ public class FakeRecipesAdapter implements RecipesPort {
         this.updateIngredientBoughtRecipeIdParam = recipeId;
         this.updateIngredientBoughtIngredientIdParam = ingredientId;
         this.updateIngredientBoughtParam = bought;
+    }
+
+    @Override
+    public void detachIngredient(String recipeId, String ingredientId) {
+        this.detachIngredientRecipeIdParam = recipeId;
+        this.detachIngredientIngredientIdParam = ingredientId;
     }
 }
