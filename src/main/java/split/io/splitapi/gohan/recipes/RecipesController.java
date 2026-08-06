@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import split.io.splitapi.gohan.recipes.models.inputs.CreateRecipeRequest;
+import split.io.splitapi.gohan.recipes.models.inputs.PatchRecipeIngredientRequest;
 import split.io.splitapi.gohan.recipes.models.inputs.PatchRecipeRequest;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeDetailResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeResponse;
@@ -56,5 +57,11 @@ public class RecipesController {
     @ResponseStatus(HttpStatus.CREATED)
     public RecipeDetailResponse addIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
         return recipesFacade.addIngredient(id, ingredientId);
+    }
+
+    @PatchMapping("/{id}/ingredients/{ingredientId}")
+    @ResponseStatus(HttpStatus.OK)
+    public RecipeDetailResponse updateIngredientBought(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId, @Valid @RequestBody PatchRecipeIngredientRequest request) {
+        return recipesFacade.updateIngredientBought(id, ingredientId, request);
     }
 }

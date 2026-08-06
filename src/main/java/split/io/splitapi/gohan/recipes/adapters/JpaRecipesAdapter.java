@@ -74,6 +74,11 @@ public class JpaRecipesAdapter implements RecipesPort {
         recipeIngredientsRepository.save(entity);
     }
 
+    @Override
+    public void updateIngredientBought(String recipeId, String ingredientId, boolean bought) {
+        recipeIngredientsRepository.updateBought(recipeId, ingredientId, bought);
+    }
+
     private Recipe mapToRecipe(RecipeEntity entity) {
         return new Recipe(entity.getId(), entity.getDeviceId(), entity.getName(), entity.isInMealsList(), entity.isDone());
     }

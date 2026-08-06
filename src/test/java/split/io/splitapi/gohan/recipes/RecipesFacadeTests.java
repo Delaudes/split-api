@@ -7,6 +7,7 @@ import split.io.splitapi.gohan.recipes.models.Recipe;
 import split.io.splitapi.gohan.recipes.models.RecipeDetail;
 import split.io.splitapi.gohan.recipes.models.RecipeIngredient;
 import split.io.splitapi.gohan.recipes.models.inputs.CreateRecipeRequest;
+import split.io.splitapi.gohan.recipes.models.inputs.PatchRecipeIngredientRequest;
 import split.io.splitapi.gohan.recipes.models.inputs.PatchRecipeRequest;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeDetailResponse;
 import split.io.splitapi.gohan.recipes.models.outputs.RecipeIngredientResponse;
@@ -220,5 +221,29 @@ class RecipesFacadeTests {
         assertEquals(recipeId, fakeRecipesAdapter.attachIngredientRecipeIdParam);
         assertEquals(ingredientId, fakeRecipesAdapter.attachIngredientIngredientIdParam);
         assertEquals(fakeUuidGenerator.uuid, fakeRecipesAdapter.attachIngredientRecipeIngredientIdParam);
+    }
+
+    @Test
+    void shouldUpdateIngredientBought() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of(
+                new RecipeIngredient(ingredientId, "Riz", true)
+        ));
+        PatchRecipeIngredientRequest request = new PatchRecipeIngredientRequest(true);
+        RecipeDetailResponse expectedResponse = new RecipeDetailResponse(recipeId, "Curry", false, false, List.of(
+                new RecipeIngredientResponse(ingredientId, "Riz", true)
+        ));
+
+        // When
+        RecipeDetailResponse response = recipesFacade.updateIngredientBought(recipeId, ingredientId, request);
+
+        // Then
+        assertEquals(expectedResponse, response);
+        assertEquals(recipeId, fakeRecipesAdapter.updateIngredientBoughtRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipesAdapter.updateIngredientBoughtIngredientIdParam);
+        assertTrue(fakeRecipesAdapter.updateIngredientBoughtParam);
+        assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
     }
 }

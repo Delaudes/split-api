@@ -37,4 +37,9 @@ public class RecipesService {
         recipesPort.attachIngredient(recipeId, ingredientId, recipeIngredientId);
         return recipesPort.fetchById(recipeId);
     }
+
+    public RecipeDetail updateIngredientBought(String recipeId, String ingredientId, boolean bought) {
+        recipesPort.updateIngredientBought(recipeId, ingredientId, bought);
+        return recipesPort.fetchById(recipeId);
+    }
 }

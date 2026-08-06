@@ -150,4 +150,19 @@ class JpaRecipesAdapterTests {
         assertEquals(ingredientId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getIngredientId());
         assertFalse(fakeRecipeIngredientsRepository.savedRecipeIngredient.isBought());
     }
+
+    @Test
+    void shouldUpdateIngredientBoughtForRecipe() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "fake-ingredient-id";
+
+        // When
+        adapter.updateIngredientBought(recipeId, ingredientId, true);
+
+        // Then
+        assertEquals(recipeId, fakeRecipeIngredientsRepository.updateBoughtRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipeIngredientsRepository.updateBoughtIngredientIdParam);
+        assertTrue(fakeRecipeIngredientsRepository.updateBoughtParam);
+    }
 }

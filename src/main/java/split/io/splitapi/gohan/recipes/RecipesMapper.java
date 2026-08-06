@@ -35,7 +35,7 @@ public class RecipesMapper {
         return new RecipeDetailResponse(recipeDetail.id(), recipeDetail.name(), recipeDetail.inMealsList(), recipeDetail.done(), ingredients);
     }
 
-    private RecipeIngredientResponse toRecipeIngredientResponse(RecipeIngredient recipeIngredient) {
+    public RecipeIngredientResponse toRecipeIngredientResponse(RecipeIngredient recipeIngredient) {
         return new RecipeIngredientResponse(recipeIngredient.id(), recipeIngredient.name(), recipeIngredient.bought());
     }
 }
