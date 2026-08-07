@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +34,13 @@ public class RecipesController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public RecipesListResponse fetchAll(@RequestHeader("X-Device-Id") @NotBlank String deviceId) {
+    public RecipesListResponse fetchAllByDevice(@RequestHeader("X-Device-Id") @NotBlank String deviceId) {
         return recipesFacade.fetchAllByDevice(deviceId);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RecipeDetailResponse fetch(@PathVariable @NotBlank String id) {
+    public RecipeDetailResponse fetchById(@PathVariable @NotBlank String id) {
         return recipesFacade.fetchById(id);
     }
 
@@ -56,19 +58,30 @@ public class RecipesController {
 
     @PostMapping("/{id}/ingredients/{ingredientId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public RecipeDetailResponse addIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
-        return recipesFacade.addIngredient(id, ingredientId);
+    public RecipeDetailResponse createRecipeIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
+        return recipesFacade.createRecipeIngredient(id, ingredientId);
     }
 
     @PatchMapping("/{id}/ingredients/{ingredientId}")
     @ResponseStatus(HttpStatus.OK)
-    public RecipeDetailResponse updateIngredientBought(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId, @Valid @RequestBody PatchRecipeIngredientRequest request) {
-        return recipesFacade.updateIngredientBought(id, ingredientId, request);
+    public RecipeDetailResponse updateRecipeIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId, @Valid @RequestBody PatchRecipeIngredientRequest request) {
+        return recipesFacade.updateRecipeIngredient(id, ingredientId, request);
     }
 
     @DeleteMapping("/{id}/ingredients/{ingredientId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void detachIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
-        recipesFacade.detachIngredient(id, ingredientId);
+    public void deleteRecipeIngredient(@PathVariable @NotBlank String id, @PathVariable @NotBlank String ingredientId) {
+        recipesFacade.deleteRecipeIngredient(id, ingredientId);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable @NotBlank String id) {
+        recipesFacade.delete(id);
+    }
+
+    @ExceptionHandler(RecipeInMealsListException.class)
+    public ProblemDetail handleRecipeInMealsList(RecipeInMealsListException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
     }
 }

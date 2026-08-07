@@ -15,15 +15,12 @@ public class FakeRecipesAdapter implements RecipesPort {
     public String fetchByIdParam;
     public Recipe savedRecipe;
     public RecipeDetail updatedRecipeDetail;
-    public String resetIngredientsBoughtParam;
-    public String attachIngredientRecipeIdParam;
-    public String attachIngredientIngredientIdParam;
-    public String attachIngredientRecipeIngredientIdParam;
-    public String updateIngredientBoughtRecipeIdParam;
-    public String updateIngredientBoughtIngredientIdParam;
-    public Boolean updateIngredientBoughtParam;
-    public String detachIngredientRecipeIdParam;
-    public String detachIngredientIngredientIdParam;
+    public String saveRecipeIngredientRecipeIdParam;
+    public String saveRecipeIngredientIngredientIdParam;
+    public String saveRecipeIngredientRecipeIngredientIdParam;
+    public String deleteRecipeIngredientRecipeIdParam;
+    public String deleteRecipeIngredientIngredientIdParam;
+    public String deletedRecipeId;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -48,27 +45,20 @@ public class FakeRecipesAdapter implements RecipesPort {
     }
 
     @Override
-    public void resetIngredientsBought(String recipeId) {
-        this.resetIngredientsBoughtParam = recipeId;
+    public void saveRecipeIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
+        this.saveRecipeIngredientRecipeIdParam = recipeId;
+        this.saveRecipeIngredientIngredientIdParam = ingredientId;
+        this.saveRecipeIngredientRecipeIngredientIdParam = recipeIngredientId;
     }
 
     @Override
-    public void attachIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
-        this.attachIngredientRecipeIdParam = recipeId;
-        this.attachIngredientIngredientIdParam = ingredientId;
-        this.attachIngredientRecipeIngredientIdParam = recipeIngredientId;
+    public void deleteRecipeIngredient(String recipeId, String ingredientId) {
+        this.deleteRecipeIngredientRecipeIdParam = recipeId;
+        this.deleteRecipeIngredientIngredientIdParam = ingredientId;
     }
 
     @Override
-    public void updateIngredientBought(String recipeId, String ingredientId, boolean bought) {
-        this.updateIngredientBoughtRecipeIdParam = recipeId;
-        this.updateIngredientBoughtIngredientIdParam = ingredientId;
-        this.updateIngredientBoughtParam = bought;
-    }
-
-    @Override
-    public void detachIngredient(String recipeId, String ingredientId) {
-        this.detachIngredientRecipeIdParam = recipeId;
-        this.detachIngredientIngredientIdParam = ingredientId;
+    public void delete(String id) {
+        this.deletedRecipeId = id;
     }
 }

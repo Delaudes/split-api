@@ -32,7 +32,7 @@ public class IngredientsController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public IngredientsListResponse fetchAll(@RequestHeader("X-Device-Id") @NotBlank String deviceId) {
+    public IngredientsListResponse fetchAllByDevice(@RequestHeader("X-Device-Id") @NotBlank String deviceId) {
         return ingredientsFacade.fetchAllByDevice(deviceId);
     }
 

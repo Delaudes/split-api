@@ -10,8 +10,7 @@ public interface RecipesPort {
     RecipeDetail fetchById(String id);
     void save(Recipe recipe);
     void update(RecipeDetail recipeDetail);
-    void resetIngredientsBought(String recipeId);
-    void attachIngredient(String recipeId, String ingredientId, String recipeIngredientId);
-    void updateIngredientBought(String recipeId, String ingredientId, boolean bought);
-    void detachIngredient(String recipeId, String ingredientId);
+    void saveRecipeIngredient(String recipeId, String ingredientId, String recipeIngredientId);
+    void deleteRecipeIngredient(String recipeId, String ingredientId);
+    void delete(String id);
 }

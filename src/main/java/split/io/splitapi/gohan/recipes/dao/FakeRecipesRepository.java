@@ -13,10 +13,7 @@ public class FakeRecipesRepository implements RecipesRepository {
     public RecipeEntity recipeToReturn;
     public String findByIdParam;
     public RecipeEntity savedRecipe;
-    public String updateFieldsId;
-    public String updateFieldsName;
-    public Boolean updateFieldsInMealsList;
-    public Boolean updateFieldsDone;
+    public String deletedRecipeId;
 
     @Override
     public List<RecipeEntity> findByDeviceId(String deviceId) {
@@ -36,10 +33,7 @@ public class FakeRecipesRepository implements RecipesRepository {
     }
 
     @Override
-    public void updateFields(String id, String name, boolean inMealsList, boolean done) {
-        this.updateFieldsId = id;
-        this.updateFieldsName = name;
-        this.updateFieldsInMealsList = inMealsList;
-        this.updateFieldsDone = done;
+    public void deleteById(String id) {
+        this.deletedRecipeId = id;
     }
 }

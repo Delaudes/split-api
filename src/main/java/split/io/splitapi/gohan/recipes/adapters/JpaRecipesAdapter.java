@@ -2,9 +2,7 @@ package split.io.splitapi.gohan.recipes.adapters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 import split.io.splitapi.gohan.recipes.RecipesPort;
-import split.io.splitapi.gohan.recipes.dao.IngredientsLookupRepository;
 import split.io.splitapi.gohan.recipes.dao.RecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.RecipesRepository;
 import split.io.splitapi.gohan.recipes.models.Recipe;
@@ -23,7 +21,6 @@ public class JpaRecipesAdapter implements RecipesPort {
 
     private final RecipesRepository recipesRepository;
     private final RecipeIngredientsRepository recipeIngredientsRepository;
-    private final IngredientsLookupRepository ingredientsLookupRepository;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -37,16 +34,10 @@ public class JpaRecipesAdapter implements RecipesPort {
         RecipeEntity entity = recipesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
 
-        List<String> ingredientIds = entity.getRecipeIngredients().stream()
-                .map(RecipeIngredientEntity::getIngredientId)
-                .toList();
-        Map<String, String> nameByIngredientId = ingredientsLookupRepository.findAllById(ingredientIds).stream()
-                .collect(Collectors.toMap(IngredientEntity::getId, IngredientEntity::getName));
-
         List<RecipeIngredient> ingredients = entity.getRecipeIngredients().stream()
                 .map(recipeIngredientEntity -> new RecipeIngredient(
                         recipeIngredientEntity.getIngredientId(),
-                        nameByIngredientId.get(recipeIngredientEntity.getIngredientId()),
+                        recipeIngredientEntity.getIngredient().getName(),
                         recipeIngredientEntity.isBought()))
                 .toList();
         return new RecipeDetail(entity.getId(), entity.getName(), entity.isInMealsList(), entity.isDone(), ingredients);
@@ -60,28 +51,38 @@ public class JpaRecipesAdapter implements RecipesPort {
 
     @Override
     public void update(RecipeDetail recipeDetail) {
-        recipesRepository.updateFields(recipeDetail.id(), recipeDetail.name(), recipeDetail.inMealsList(), recipeDetail.done());
+        RecipeEntity entity = recipesRepository.findById(recipeDetail.id())
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeDetail.id()));
+        entity.setName(recipeDetail.name());
+        entity.setInMealsList(recipeDetail.inMealsList());
+        entity.setDone(recipeDetail.done());
+
+        Map<String, Boolean> boughtByIngredientId = recipeDetail.ingredients().stream()
+                .collect(Collectors.toMap(RecipeIngredient::id, RecipeIngredient::bought));
+        entity.getRecipeIngredients().forEach(recipeIngredientEntity -> {
+            Boolean bought = boughtByIngredientId.get(recipeIngredientEntity.getIngredientId());
+            if (bought != null) {
+                recipeIngredientEntity.setBought(bought);
+            }
+        });
+
+        recipesRepository.save(entity);
     }
 
     @Override
-    public void resetIngredientsBought(String recipeId) {
-        recipeIngredientsRepository.resetBoughtByRecipeId(recipeId);
-    }
-
-    @Override
-    public void attachIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
+    public void saveRecipeIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
         RecipeIngredientEntity entity = new RecipeIngredientEntity(recipeIngredientId, recipeId, ingredientId, false);
         recipeIngredientsRepository.save(entity);
     }
 
     @Override
-    public void updateIngredientBought(String recipeId, String ingredientId, boolean bought) {
-        recipeIngredientsRepository.updateBought(recipeId, ingredientId, bought);
+    public void deleteRecipeIngredient(String recipeId, String ingredientId) {
+        recipeIngredientsRepository.deleteByRecipeIdAndIngredientId(recipeId, ingredientId);
     }
 
     @Override
-    public void detachIngredient(String recipeId, String ingredientId) {
-        recipeIngredientsRepository.deleteByRecipeIdAndIngredientId(recipeId, ingredientId);
+    public void delete(String id) {
+        recipesRepository.deleteById(id);
     }
 
     private Recipe mapToRecipe(RecipeEntity entity) {

@@ -19,31 +19,38 @@ public class RecipesService {
         return recipesPort.fetchById(id);
     }
 
-    public void createRecipe(Recipe recipe) {
+    public void create(Recipe recipe) {
         recipesPort.save(recipe);
     }
 
-    public RecipeDetail updateRecipe(String id, String name, Boolean inMealsList, Boolean done) {
+    public RecipeDetail update(String id, String name, Boolean inMealsList, Boolean done) {
         RecipeDetail current = recipesPort.fetchById(id);
         RecipeDetail updated = current.applyPatch(name, inMealsList, done);
         recipesPort.update(updated);
-        if (Boolean.TRUE.equals(inMealsList) && current.hasIngredientsBought()) {
-            recipesPort.resetIngredientsBought(id);
-        }
         return updated;
     }
 
-    public RecipeDetail addIngredientToRecipe(String recipeId, String ingredientId, String recipeIngredientId) {
-        recipesPort.attachIngredient(recipeId, ingredientId, recipeIngredientId);
+    public RecipeDetail createRecipeIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
+        recipesPort.saveRecipeIngredient(recipeId, ingredientId, recipeIngredientId);
         return recipesPort.fetchById(recipeId);
     }
 
-    public RecipeDetail updateIngredientBought(String recipeId, String ingredientId, boolean bought) {
-        recipesPort.updateIngredientBought(recipeId, ingredientId, bought);
-        return recipesPort.fetchById(recipeId);
+    public RecipeDetail updateRecipeIngredient(String recipeId, String ingredientId, boolean bought) {
+        RecipeDetail current = recipesPort.fetchById(recipeId);
+        RecipeDetail updated = current.applyPatch(ingredientId, bought);
+        recipesPort.update(updated);
+        return updated;
     }
 
-    public void detachIngredientFromRecipe(String recipeId, String ingredientId) {
-        recipesPort.detachIngredient(recipeId, ingredientId);
+    public void deleteRecipeIngredient(String recipeId, String ingredientId) {
+        recipesPort.deleteRecipeIngredient(recipeId, ingredientId);
+    }
+
+    public void delete(String id) {
+        RecipeDetail recipe = recipesPort.fetchById(id);
+        if (recipe.inMealsList()) {
+            throw new RecipeInMealsListException("Recipe is in the meals list: " + id);
+        }
+        recipesPort.delete(id);
     }
 }

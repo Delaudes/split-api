@@ -33,27 +33,31 @@ public class RecipesFacade {
     public RecipeResponse create(CreateRecipeRequest request, String deviceId) {
         String id = uuidGenerator.generate();
         Recipe recipe = recipesMapper.toRecipe(request, id, deviceId);
-        recipesService.createRecipe(recipe);
+        recipesService.create(recipe);
         return recipesMapper.toRecipeResponse(recipe);
     }
 
     public RecipeDetailResponse update(String id, PatchRecipeRequest request) {
-        RecipeDetail updated = recipesService.updateRecipe(id, request.name(), request.inMealsList(), request.done());
+        RecipeDetail updated = recipesService.update(id, request.name(), request.inMealsList(), request.done());
         return recipesMapper.toRecipeDetailResponse(updated);
     }
 
-    public RecipeDetailResponse addIngredient(String recipeId, String ingredientId) {
+    public RecipeDetailResponse createRecipeIngredient(String recipeId, String ingredientId) {
         String recipeIngredientId = uuidGenerator.generate();
-        RecipeDetail updated = recipesService.addIngredientToRecipe(recipeId, ingredientId, recipeIngredientId);
+        RecipeDetail updated = recipesService.createRecipeIngredient(recipeId, ingredientId, recipeIngredientId);
         return recipesMapper.toRecipeDetailResponse(updated);
     }
 
-    public RecipeDetailResponse updateIngredientBought(String recipeId, String ingredientId, PatchRecipeIngredientRequest request) {
-        RecipeDetail updated = recipesService.updateIngredientBought(recipeId, ingredientId, request.bought());
+    public RecipeDetailResponse updateRecipeIngredient(String recipeId, String ingredientId, PatchRecipeIngredientRequest request) {
+        RecipeDetail updated = recipesService.updateRecipeIngredient(recipeId, ingredientId, request.bought());
         return recipesMapper.toRecipeDetailResponse(updated);
     }
 
-    public void detachIngredient(String recipeId, String ingredientId) {
-        recipesService.detachIngredientFromRecipe(recipeId, ingredientId);
+    public void deleteRecipeIngredient(String recipeId, String ingredientId) {
+        recipesService.deleteRecipeIngredient(recipeId, ingredientId);
+    }
+
+    public void delete(String id) {
+        recipesService.delete(id);
     }
 }

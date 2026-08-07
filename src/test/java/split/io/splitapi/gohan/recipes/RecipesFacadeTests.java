@@ -123,7 +123,7 @@ class RecipesFacadeTests {
 
         // Then
         assertEquals(expectedResponse, response);
-        assertNull(fakeRecipesAdapter.resetIngredientsBoughtParam);
+        assertEquals(fakeRecipesAdapter.recipeDetailToReturn, fakeRecipesAdapter.updatedRecipeDetail);
     }
 
     @Test
@@ -144,11 +144,11 @@ class RecipesFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
-        assertNull(fakeRecipesAdapter.resetIngredientsBoughtParam);
+        assertEquals(fakeRecipesAdapter.recipeDetailToReturn, fakeRecipesAdapter.updatedRecipeDetail);
     }
 
     @Test
-    void shouldResetIngredientsBoughtWhenInMealsListTrueAndSomethingWasBought() {
+    void shouldResetIngredientsBoughtWhenInMealsListTrue() {
         // Given
         String recipeId = "fake-recipe-id";
         fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, true, List.of(
@@ -166,11 +166,11 @@ class RecipesFacadeTests {
 
         // Then
         assertEquals(expectedResponse, response);
-        assertEquals(recipeId, fakeRecipesAdapter.resetIngredientsBoughtParam);
+        assertTrue(fakeRecipesAdapter.updatedRecipeDetail.ingredients().stream().noneMatch(RecipeIngredient::bought));
     }
 
     @Test
-    void shouldNotResetIngredientsBoughtWhenInMealsListFalse() {
+    void shouldNotChangeIngredientsBoughtWhenInMealsListFalse() {
         // Given
         String recipeId = "fake-recipe-id";
         fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", true, false, List.of(
@@ -182,27 +182,11 @@ class RecipesFacadeTests {
         recipesFacade.update(recipeId, request);
 
         // Then
-        assertNull(fakeRecipesAdapter.resetIngredientsBoughtParam);
+        assertTrue(fakeRecipesAdapter.updatedRecipeDetail.ingredients().getFirst().bought());
     }
 
     @Test
-    void shouldNotResetIngredientsBoughtWhenNothingWasBought() {
-        // Given
-        String recipeId = "fake-recipe-id";
-        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of(
-                new RecipeIngredient("ingredient-1", "Riz", false)
-        ));
-        PatchRecipeRequest request = new PatchRecipeRequest(null, true, null);
-
-        // When
-        recipesFacade.update(recipeId, request);
-
-        // Then
-        assertNull(fakeRecipesAdapter.resetIngredientsBoughtParam);
-    }
-
-    @Test
-    void shouldAttachIngredientToRecipeWithGeneratedId() {
+    void shouldCreateRecipeIngredientWithGeneratedId() {
         // Given
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
@@ -214,50 +198,76 @@ class RecipesFacadeTests {
         ));
 
         // When
-        RecipeDetailResponse response = recipesFacade.addIngredient(recipeId, ingredientId);
+        RecipeDetailResponse response = recipesFacade.createRecipeIngredient(recipeId, ingredientId);
 
         // Then
         assertEquals(expectedResponse, response);
-        assertEquals(recipeId, fakeRecipesAdapter.attachIngredientRecipeIdParam);
-        assertEquals(ingredientId, fakeRecipesAdapter.attachIngredientIngredientIdParam);
-        assertEquals(fakeUuidGenerator.uuid, fakeRecipesAdapter.attachIngredientRecipeIngredientIdParam);
+        assertEquals(recipeId, fakeRecipesAdapter.saveRecipeIngredientRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipesAdapter.saveRecipeIngredientIngredientIdParam);
+        assertEquals(fakeUuidGenerator.uuid, fakeRecipesAdapter.saveRecipeIngredientRecipeIngredientIdParam);
     }
 
     @Test
-    void shouldUpdateIngredientBought() {
+    void shouldUpdateRecipeIngredient() {
         // Given
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
         fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of(
-                new RecipeIngredient(ingredientId, "Riz", true)
+                new RecipeIngredient(ingredientId, "Riz", false),
+                new RecipeIngredient("other-ingredient-id", "Poulet", false)
         ));
         PatchRecipeIngredientRequest request = new PatchRecipeIngredientRequest(true);
         RecipeDetailResponse expectedResponse = new RecipeDetailResponse(recipeId, "Curry", false, false, List.of(
-                new RecipeIngredientResponse(ingredientId, "Riz", true)
+                new RecipeIngredientResponse(ingredientId, "Riz", true),
+                new RecipeIngredientResponse("other-ingredient-id", "Poulet", false)
         ));
 
         // When
-        RecipeDetailResponse response = recipesFacade.updateIngredientBought(recipeId, ingredientId, request);
+        RecipeDetailResponse response = recipesFacade.updateRecipeIngredient(recipeId, ingredientId, request);
 
         // Then
         assertEquals(expectedResponse, response);
-        assertEquals(recipeId, fakeRecipesAdapter.updateIngredientBoughtRecipeIdParam);
-        assertEquals(ingredientId, fakeRecipesAdapter.updateIngredientBoughtIngredientIdParam);
-        assertTrue(fakeRecipesAdapter.updateIngredientBoughtParam);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
+        assertEquals(expectedResponse.ingredients(), fakeRecipesAdapter.updatedRecipeDetail.ingredients().stream()
+                .map(ri -> new RecipeIngredientResponse(ri.id(), ri.name(), ri.bought()))
+                .toList());
     }
 
     @Test
-    void shouldDetachIngredient() {
+    void shouldDeleteRecipeIngredient() {
         // Given
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
 
         // When
-        recipesFacade.detachIngredient(recipeId, ingredientId);
+        recipesFacade.deleteRecipeIngredient(recipeId, ingredientId);
 
         // Then
-        assertEquals(recipeId, fakeRecipesAdapter.detachIngredientRecipeIdParam);
-        assertEquals(ingredientId, fakeRecipesAdapter.detachIngredientIngredientIdParam);
+        assertEquals(recipeId, fakeRecipesAdapter.deleteRecipeIngredientRecipeIdParam);
+        assertEquals(ingredientId, fakeRecipesAdapter.deleteRecipeIngredientIngredientIdParam);
+    }
+
+    @Test
+    void shouldDeleteRecipeWhenNotInMealsList() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of());
+
+        // When
+        recipesFacade.delete(recipeId);
+
+        // Then
+        assertEquals(recipeId, fakeRecipesAdapter.deletedRecipeId);
+    }
+
+    @Test
+    void shouldThrowConflictWhenDeletingRecipeInMealsList() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", true, false, List.of());
+
+        // Then
+        assertThrows(RecipeInMealsListException.class, () -> recipesFacade.delete(recipeId));
+        assertNull(fakeRecipesAdapter.deletedRecipeId);
     }
 }

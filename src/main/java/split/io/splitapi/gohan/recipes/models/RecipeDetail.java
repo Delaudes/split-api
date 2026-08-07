@@ -18,7 +18,12 @@ public record RecipeDetail(String id, String name, boolean inMealsList, boolean 
         return new RecipeDetail(id, newName, newInMealsList, newDone, newIngredients);
     }
 
-    public boolean hasIngredientsBought() {
-        return ingredients.stream().anyMatch(RecipeIngredient::bought);
+    public RecipeDetail applyPatch(String ingredientId, boolean bought) {
+        List<RecipeIngredient> newIngredients = this.ingredients.stream()
+                .map(ingredient -> ingredient.id().equals(ingredientId)
+                        ? new RecipeIngredient(ingredient.id(), ingredient.name(), bought)
+                        : ingredient)
+                .toList();
+        return new RecipeDetail(id, name, inMealsList, done, newIngredients);
     }
 }

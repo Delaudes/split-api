@@ -3,7 +3,6 @@ package split.io.splitapi.gohan.recipes.adapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
-import split.io.splitapi.gohan.recipes.dao.FakeIngredientsLookupRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipesRepository;
 import split.io.splitapi.gohan.recipes.models.Recipe;
@@ -21,14 +20,12 @@ class JpaRecipesAdapterTests {
     private JpaRecipesAdapter adapter;
     private FakeRecipesRepository fakeRecipesRepository;
     private FakeRecipeIngredientsRepository fakeRecipeIngredientsRepository;
-    private FakeIngredientsLookupRepository fakeIngredientsLookupRepository;
 
     @BeforeEach
     void setUp() {
         fakeRecipesRepository = new FakeRecipesRepository();
         fakeRecipeIngredientsRepository = new FakeRecipeIngredientsRepository();
-        fakeIngredientsLookupRepository = new FakeIngredientsLookupRepository();
-        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository, fakeIngredientsLookupRepository);
+        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository);
     }
 
     @Test
@@ -58,13 +55,13 @@ class JpaRecipesAdapterTests {
         String recipeId = "fake-recipe-id";
         String deviceId = "fake-device-id";
         RecipeEntity recipeEntity = new RecipeEntity(recipeId, deviceId, "Curry", true, false);
-        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-1", recipeId, "ingredient-1", true));
-        recipeEntity.getRecipeIngredients().add(new RecipeIngredientEntity("recipe-ingredient-2", recipeId, "ingredient-2", false));
+        RecipeIngredientEntity recipeIngredient1 = new RecipeIngredientEntity("recipe-ingredient-1", recipeId, "ingredient-1", true);
+        recipeIngredient1.setIngredient(new IngredientEntity("ingredient-1", deviceId, "Riz", false, false));
+        RecipeIngredientEntity recipeIngredient2 = new RecipeIngredientEntity("recipe-ingredient-2", recipeId, "ingredient-2", false);
+        recipeIngredient2.setIngredient(new IngredientEntity("ingredient-2", deviceId, "Poulet", false, true));
+        recipeEntity.getRecipeIngredients().add(recipeIngredient1);
+        recipeEntity.getRecipeIngredients().add(recipeIngredient2);
         fakeRecipesRepository.recipeToReturn = recipeEntity;
-        fakeIngredientsLookupRepository.ingredientsToReturn = List.of(
-                new IngredientEntity("ingredient-1", deviceId, "Riz", false, false),
-                new IngredientEntity("ingredient-2", deviceId, "Poulet", false, true)
-        );
 
         RecipeDetail expectedDetail = new RecipeDetail(recipeId, "Curry", true, false, List.of(
                 new RecipeIngredient("ingredient-1", "Riz", true),
@@ -77,7 +74,6 @@ class JpaRecipesAdapterTests {
         // Then
         assertEquals(expectedDetail, detail);
         assertEquals(recipeId, fakeRecipesRepository.findByIdParam);
-        assertEquals(List.of("ingredient-1", "ingredient-2"), fakeIngredientsLookupRepository.findAllByIdParam);
     }
 
     @Test
@@ -107,42 +103,67 @@ class JpaRecipesAdapterTests {
     }
 
     @Test
-    void shouldUpdateRecipeFields() {
+    void shouldUpdateRecipeScalarFields() {
         // Given
         String recipeId = "fake-recipe-id";
+        fakeRecipesRepository.recipeToReturn = new RecipeEntity(recipeId, "fake-device-id", "Curry", false, true);
         RecipeDetail recipeDetail = new RecipeDetail(recipeId, "Curry maison", true, false, List.of());
 
         // When
         adapter.update(recipeDetail);
 
         // Then
-        assertEquals(recipeId, fakeRecipesRepository.updateFieldsId);
-        assertEquals("Curry maison", fakeRecipesRepository.updateFieldsName);
-        assertTrue(fakeRecipesRepository.updateFieldsInMealsList);
-        assertFalse(fakeRecipesRepository.updateFieldsDone);
+        assertEquals(recipeId, fakeRecipesRepository.findByIdParam);
+        assertEquals("Curry maison", fakeRecipesRepository.savedRecipe.getName());
+        assertTrue(fakeRecipesRepository.savedRecipe.isInMealsList());
+        assertFalse(fakeRecipesRepository.savedRecipe.isDone());
     }
 
     @Test
-    void shouldResetIngredientsBoughtForRecipe() {
+    void shouldSyncIngredientsBoughtFromRecipeDetailOnUpdate() {
         // Given
         String recipeId = "fake-recipe-id";
+        String deviceId = "fake-device-id";
+        RecipeEntity recipeEntity = new RecipeEntity(recipeId, deviceId, "Curry", true, false);
+        RecipeIngredientEntity recipeIngredient1 = new RecipeIngredientEntity("recipe-ingredient-1", recipeId, "ingredient-1", true);
+        RecipeIngredientEntity recipeIngredient2 = new RecipeIngredientEntity("recipe-ingredient-2", recipeId, "ingredient-2", false);
+        recipeEntity.getRecipeIngredients().add(recipeIngredient1);
+        recipeEntity.getRecipeIngredients().add(recipeIngredient2);
+        fakeRecipesRepository.recipeToReturn = recipeEntity;
+
+        RecipeDetail recipeDetail = new RecipeDetail(recipeId, "Curry", true, false, List.of(
+                new RecipeIngredient("ingredient-1", "Riz", false),
+                new RecipeIngredient("ingredient-2", "Poulet", true)
+        ));
 
         // When
-        adapter.resetIngredientsBought(recipeId);
+        adapter.update(recipeDetail);
 
         // Then
-        assertEquals(recipeId, fakeRecipeIngredientsRepository.resetBoughtByRecipeIdParam);
+        assertFalse(recipeIngredient1.isBought());
+        assertTrue(recipeIngredient2.isBought());
+        assertSame(recipeEntity, fakeRecipesRepository.savedRecipe);
     }
 
     @Test
-    void shouldAttachIngredientToRecipe() {
+    void shouldThrowWhenRecipeToUpdateNotFound() {
+        // Given
+        String recipeId = "unknown-recipe-id";
+        RecipeDetail recipeDetail = new RecipeDetail(recipeId, "Curry maison", true, false, List.of());
+
+        // Then
+        assertThrows(RuntimeException.class, () -> adapter.update(recipeDetail));
+    }
+
+    @Test
+    void shouldSaveRecipeIngredient() {
         // Given
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
         String recipeIngredientId = "fake-recipe-ingredient-id";
 
         // When
-        adapter.attachIngredient(recipeId, ingredientId, recipeIngredientId);
+        adapter.saveRecipeIngredient(recipeId, ingredientId, recipeIngredientId);
 
         // Then
         assertEquals(recipeIngredientId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getId());
@@ -152,31 +173,28 @@ class JpaRecipesAdapterTests {
     }
 
     @Test
-    void shouldUpdateIngredientBoughtForRecipe() {
+    void shouldDeleteRecipeIngredient() {
         // Given
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
 
         // When
-        adapter.updateIngredientBought(recipeId, ingredientId, true);
-
-        // Then
-        assertEquals(recipeId, fakeRecipeIngredientsRepository.updateBoughtRecipeIdParam);
-        assertEquals(ingredientId, fakeRecipeIngredientsRepository.updateBoughtIngredientIdParam);
-        assertTrue(fakeRecipeIngredientsRepository.updateBoughtParam);
-    }
-
-    @Test
-    void shouldDetachIngredientFromRecipe() {
-        // Given
-        String recipeId = "fake-recipe-id";
-        String ingredientId = "fake-ingredient-id";
-
-        // When
-        adapter.detachIngredient(recipeId, ingredientId);
+        adapter.deleteRecipeIngredient(recipeId, ingredientId);
 
         // Then
         assertEquals(recipeId, fakeRecipeIngredientsRepository.deleteRecipeIdParam);
         assertEquals(ingredientId, fakeRecipeIngredientsRepository.deleteIngredientIdParam);
+    }
+
+    @Test
+    void shouldDeleteRecipe() {
+        // Given
+        String recipeId = "fake-recipe-id";
+
+        // When
+        adapter.delete(recipeId);
+
+        // Then
+        assertEquals(recipeId, fakeRecipesRepository.deletedRecipeId);
     }
 }

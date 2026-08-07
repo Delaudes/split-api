@@ -25,16 +25,16 @@ public class IngredientsFacade {
     public IngredientResponse create(CreateIngredientRequest request, String deviceId) {
         String id = uuidGenerator.generate();
         Ingredient ingredient = ingredientsMapper.toIngredient(request, id, deviceId);
-        ingredientsService.createIngredient(ingredient);
+        ingredientsService.create(ingredient);
         return ingredientsMapper.toIngredientResponse(ingredient);
     }
 
     public IngredientResponse update(String id, PatchIngredientRequest request) {
-        Ingredient updated = ingredientsService.updateIngredient(id, request.name(), request.inShoppingList(), request.bought());
+        Ingredient updated = ingredientsService.update(id, request.name(), request.inShoppingList(), request.bought());
         return ingredientsMapper.toIngredientResponse(updated);
     }
 
     public void delete(String id) {
-        ingredientsService.deleteIngredient(id);
+        ingredientsService.delete(id);
     }
 }
