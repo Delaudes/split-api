@@ -82,7 +82,8 @@ class JpaRecipesAdapterTests {
         String recipeId = "unknown-recipe-id";
 
         // Then
-        assertThrows(RuntimeException.class, () -> adapter.fetchById(recipeId));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> adapter.fetchById(recipeId));
+        assertEquals("Recipe not found with id: " + recipeId, exception.getMessage());
     }
 
     @Test
@@ -152,7 +153,8 @@ class JpaRecipesAdapterTests {
         RecipeDetail recipeDetail = new RecipeDetail(recipeId, "Curry maison", true, false, List.of());
 
         // Then
-        assertThrows(RuntimeException.class, () -> adapter.update(recipeDetail));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> adapter.update(recipeDetail));
+        assertEquals("Recipe not found with id: " + recipeId, exception.getMessage());
     }
 
     @Test

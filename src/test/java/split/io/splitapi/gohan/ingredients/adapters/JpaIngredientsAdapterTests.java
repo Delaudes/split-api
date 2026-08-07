@@ -83,11 +83,12 @@ class JpaIngredientsAdapterTests {
         String ingredientId = "unknown-ingredient-id";
 
         // Then
-        assertThrows(RuntimeException.class, () -> adapter.fetchById(ingredientId));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> adapter.fetchById(ingredientId));
+        assertEquals("Ingredient not found with id: " + ingredientId, exception.getMessage());
     }
 
     @Test
-    void shouldReturnWhetherIngredientIsUsedInRecipe() {
+    void shouldReturnTrueWhenIngredientIsUsedInRecipe() {
         // Given
         String ingredientId = "fake-ingredient-id";
         fakeRecipeIngredientsRepository.existsByIngredientIdResult = true;
@@ -97,6 +98,20 @@ class JpaIngredientsAdapterTests {
 
         // Then
         assertTrue(isUsed);
+        assertEquals(ingredientId, fakeRecipeIngredientsRepository.existsByIngredientIdParam);
+    }
+
+    @Test
+    void shouldReturnFalseWhenIngredientIsNotUsedInRecipe() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeRecipeIngredientsRepository.existsByIngredientIdResult = false;
+
+        // When
+        boolean isUsed = adapter.isUsedInRecipe(ingredientId);
+
+        // Then
+        assertFalse(isUsed);
         assertEquals(ingredientId, fakeRecipeIngredientsRepository.existsByIngredientIdParam);
     }
 
