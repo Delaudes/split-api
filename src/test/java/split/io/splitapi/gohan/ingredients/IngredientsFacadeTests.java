@@ -129,6 +129,21 @@ class IngredientsFacadeTests {
     }
 
     @Test
+    void shouldForceBoughtFalseWhenInShoppingListSetToTrueEvenIfBoughtExplicitlyRequestedTrue() {
+        // Given
+        String ingredientId = "fake-ingredient-id";
+        fakeIngredientsAdapter.ingredientToReturn = new Ingredient(ingredientId, "fake-device-id", "Tomate", false, false);
+        PatchIngredientRequest request = new PatchIngredientRequest(null, true, true);
+
+        // When
+        IngredientResponse response = ingredientsFacade.update(ingredientId, request);
+
+        // Then
+        assertTrue(response.inShoppingList());
+        assertFalse(response.bought());
+    }
+
+    @Test
     void shouldNotForceBoughtWhenInShoppingListSetToFalse() {
         // Given
         String ingredientId = "fake-ingredient-id";

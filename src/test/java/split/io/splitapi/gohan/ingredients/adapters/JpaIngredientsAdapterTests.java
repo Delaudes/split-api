@@ -49,7 +49,7 @@ class JpaIngredientsAdapterTests {
     void shouldSaveIngredient() {
         // Given
         String deviceId = "fake-device-id";
-        Ingredient ingredient = new Ingredient("ingredient-1", deviceId, "Tomate", false, false);
+        Ingredient ingredient = new Ingredient("ingredient-1", deviceId, "Tomate", true, false);
 
         // When
         adapter.save(ingredient);

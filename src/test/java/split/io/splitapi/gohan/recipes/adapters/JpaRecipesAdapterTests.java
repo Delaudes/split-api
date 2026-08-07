@@ -89,7 +89,7 @@ class JpaRecipesAdapterTests {
     void shouldSaveRecipe() {
         // Given
         String deviceId = "fake-device-id";
-        Recipe recipe = new Recipe("recipe-1", deviceId, "Curry", false, false);
+        Recipe recipe = new Recipe("recipe-1", deviceId, "Curry", true, false);
 
         // When
         adapter.save(recipe);
