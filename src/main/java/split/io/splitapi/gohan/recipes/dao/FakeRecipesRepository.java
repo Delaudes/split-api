@@ -10,6 +10,8 @@ public class FakeRecipesRepository implements RecipesRepository {
 
     public List<RecipeEntity> recipesToReturn = new ArrayList<>();
     public String findByDeviceIdParam;
+    public List<RecipeEntity> mealRecipesToReturn = new ArrayList<>();
+    public String findByDeviceIdAndInMealsListTrueParam;
     public RecipeEntity recipeToReturn;
     public String findByIdParam;
     public RecipeEntity savedRecipe;
@@ -19,6 +21,12 @@ public class FakeRecipesRepository implements RecipesRepository {
     public List<RecipeEntity> findByDeviceId(String deviceId) {
         this.findByDeviceIdParam = deviceId;
         return recipesToReturn;
+    }
+
+    @Override
+    public List<RecipeEntity> findByDeviceIdAndInMealsListTrue(String deviceId) {
+        this.findByDeviceIdAndInMealsListTrueParam = deviceId;
+        return mealRecipesToReturn;
     }
 
     @Override

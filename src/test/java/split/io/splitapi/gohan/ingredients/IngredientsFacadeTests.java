@@ -93,6 +93,7 @@ class IngredientsFacadeTests {
 
         // Then
         assertEquals(expectedResponse, response);
+        assertEquals(fakeIngredientsAdapter.ingredientToReturn, fakeIngredientsAdapter.savedIngredient);
     }
 
     @Test

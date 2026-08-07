@@ -137,6 +137,9 @@ class RecipesFacadeTests {
         RecipeDetailResponse expectedResponse = new RecipeDetailResponse(recipeId, "Curry maison", false, false, List.of(
                 new RecipeIngredientResponse("ingredient-1", "Riz", false)
         ));
+        RecipeDetail expectedUpdatedRecipeDetail = new RecipeDetail(recipeId, "Curry maison", false, false, List.of(
+                new RecipeIngredient("ingredient-1", "Riz", false)
+        ));
 
         // When
         RecipeDetailResponse response = recipesFacade.update(recipeId, request);
@@ -144,7 +147,7 @@ class RecipesFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
-        assertEquals(fakeRecipesAdapter.recipeDetailToReturn, fakeRecipesAdapter.updatedRecipeDetail);
+        assertEquals(expectedUpdatedRecipeDetail, fakeRecipesAdapter.updatedRecipeDetail);
     }
 
     @Test
@@ -167,6 +170,21 @@ class RecipesFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertTrue(fakeRecipesAdapter.updatedRecipeDetail.ingredients().stream().noneMatch(RecipeIngredient::bought));
+    }
+
+    @Test
+    void shouldForceDoneFalseWhenInMealsListSetToTrueEvenIfDoneExplicitlyRequestedTrue() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        fakeRecipesAdapter.recipeDetailToReturn = new RecipeDetail(recipeId, "Curry", false, false, List.of());
+        PatchRecipeRequest request = new PatchRecipeRequest(null, true, true);
+
+        // When
+        RecipeDetailResponse response = recipesFacade.update(recipeId, request);
+
+        // Then
+        assertTrue(response.inMealsList());
+        assertFalse(response.done());
     }
 
     @Test
@@ -221,6 +239,10 @@ class RecipesFacadeTests {
                 new RecipeIngredientResponse(ingredientId, "Riz", true),
                 new RecipeIngredientResponse("other-ingredient-id", "Poulet", false)
         ));
+        RecipeDetail expectedUpdatedRecipeDetail = new RecipeDetail(recipeId, "Curry", false, false, List.of(
+                new RecipeIngredient(ingredientId, "Riz", true),
+                new RecipeIngredient("other-ingredient-id", "Poulet", false)
+        ));
 
         // When
         RecipeDetailResponse response = recipesFacade.updateRecipeIngredient(recipeId, ingredientId, request);
@@ -228,9 +250,7 @@ class RecipesFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertEquals(recipeId, fakeRecipesAdapter.fetchByIdParam);
-        assertEquals(expectedResponse.ingredients(), fakeRecipesAdapter.updatedRecipeDetail.ingredients().stream()
-                .map(ri -> new RecipeIngredientResponse(ri.id(), ri.name(), ri.bought()))
-                .toList());
+        assertEquals(expectedUpdatedRecipeDetail, fakeRecipesAdapter.updatedRecipeDetail);
     }
 
     @Test

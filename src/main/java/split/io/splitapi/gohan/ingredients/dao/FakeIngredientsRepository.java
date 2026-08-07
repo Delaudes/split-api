@@ -10,6 +10,8 @@ public class FakeIngredientsRepository implements IngredientsRepository {
 
     public List<IngredientEntity> ingredientsToReturn = new ArrayList<>();
     public String findByDeviceIdParam;
+    public List<IngredientEntity> shoppingListIngredientsToReturn = new ArrayList<>();
+    public String findByDeviceIdAndInShoppingListTrueParam;
     public IngredientEntity savedIngredient;
     public String findByIdParam;
     public IngredientEntity ingredientToReturn;
@@ -19,6 +21,12 @@ public class FakeIngredientsRepository implements IngredientsRepository {
     public List<IngredientEntity> findByDeviceId(String deviceId) {
         this.findByDeviceIdParam = deviceId;
         return ingredientsToReturn;
+    }
+
+    @Override
+    public List<IngredientEntity> findByDeviceIdAndInShoppingListTrue(String deviceId) {
+        this.findByDeviceIdAndInShoppingListTrueParam = deviceId;
+        return shoppingListIngredientsToReturn;
     }
 
     @Override
