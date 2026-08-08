@@ -106,6 +106,39 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.25.9</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>split.io.splitapi.gohan.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>split.io.splitapi.gohan.*</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>split.io.splitapi.gohan.*.models.entities.*</param>
+                        <param>split.io.splitapi.gohan.*.models.inputs.*</param>
+                        <param>split.io.splitapi.gohan.*.models.outputs.*</param>
+                        <param>split.io.splitapi.gohan.*Controller</param>
+                        <param>split.io.splitapi.gohan.*Config</param>
+                        <param>split.io.splitapi.gohan.*Exception</param>
+                        <param>split.io.splitapi.gohan.*.dao.*</param>
+                        <param>split.io.splitapi.gohan.*.adapters.Fake*</param>
+                    </excludedClasses>
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                    </outputFormats>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
