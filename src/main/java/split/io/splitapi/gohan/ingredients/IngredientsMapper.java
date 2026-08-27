@@ -17,7 +17,8 @@ public class IngredientsMapper {
     }
 
     public Ingredient toIngredient(CreateIngredientRequest request, String id, String deviceId) {
-        return new Ingredient(id, deviceId, request.name(), false, false);
+        boolean inShoppingList = Boolean.TRUE.equals(request.inShoppingList());
+        return new Ingredient(id, deviceId, request.name(), inShoppingList, false);
     }
 
     public IngredientResponse toIngredientResponse(Ingredient ingredient) {
