@@ -68,7 +68,7 @@ class IngredientsFacadeTests {
         // Given
         String deviceId = "fake-device-id";
         String ingredientName = "Tomate";
-        CreateIngredientRequest request = new CreateIngredientRequest(ingredientName);
+        CreateIngredientRequest request = new CreateIngredientRequest(ingredientName, null);
         Ingredient expectedIngredient = new Ingredient(fakeUuidGenerator.uuid, deviceId, ingredientName, false, false);
         IngredientResponse expectedResponse = new IngredientResponse(fakeUuidGenerator.uuid, ingredientName, false, false);
 
@@ -78,6 +78,21 @@ class IngredientsFacadeTests {
         // Then
         assertEquals(expectedResponse, response);
         assertEquals(expectedIngredient, fakeIngredientsAdapter.savedIngredient);
+    }
+
+    @Test
+    void shouldCreateIngredientInShoppingListWhenExplicitlyRequestedTrue() {
+        // Given
+        String deviceId = "fake-device-id";
+        String ingredientName = "Tomate";
+        CreateIngredientRequest request = new CreateIngredientRequest(ingredientName, true);
+
+        // When
+        IngredientResponse response = ingredientsFacade.create(request, deviceId);
+
+        // Then
+        assertTrue(response.inShoppingList());
+        assertTrue(fakeIngredientsAdapter.savedIngredient.inShoppingList());
     }
 
     @Test
