@@ -2,6 +2,8 @@ package split.io.splitapi.gohan.recipes.adapters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import split.io.splitapi.gohan.ingredients.dao.IngredientsRepository;
+import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 import split.io.splitapi.gohan.recipes.RecipesPort;
 import split.io.splitapi.gohan.recipes.dao.RecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.RecipesRepository;
@@ -21,6 +23,7 @@ public class JpaRecipesAdapter implements RecipesPort {
 
     private final RecipesRepository recipesRepository;
     private final RecipeIngredientsRepository recipeIngredientsRepository;
+    private final IngredientsRepository ingredientsRepository;
 
     @Override
     public List<Recipe> fetchAllByDevice(String deviceId) {
@@ -72,6 +75,11 @@ public class JpaRecipesAdapter implements RecipesPort {
     @Override
     public void saveRecipeIngredient(String recipeId, String ingredientId, String recipeIngredientId) {
         RecipeIngredientEntity entity = new RecipeIngredientEntity(recipeIngredientId, recipeId, ingredientId, false);
+        IngredientEntity ingredient = ingredientsRepository.findById(ingredientId)
+                .orElseThrow(() -> new RuntimeException("Ingredient not found with id: " + ingredientId));
+        // ingredientId alone would insert fine, but the subsequent fetchById in this same request reuses this
+        // managed instance instead of reloading from DB, so the lazy ingredient relation must be set here too.
+        entity.setIngredient(ingredient);
         recipeIngredientsRepository.save(entity);
     }
 

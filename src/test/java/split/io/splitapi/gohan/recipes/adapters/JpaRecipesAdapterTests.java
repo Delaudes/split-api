@@ -2,6 +2,7 @@ package split.io.splitapi.gohan.recipes.adapters;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import split.io.splitapi.gohan.ingredients.dao.FakeIngredientsRepository;
 import split.io.splitapi.gohan.ingredients.models.entities.IngredientEntity;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipeIngredientsRepository;
 import split.io.splitapi.gohan.recipes.dao.FakeRecipesRepository;
@@ -20,12 +21,14 @@ class JpaRecipesAdapterTests {
     private JpaRecipesAdapter adapter;
     private FakeRecipesRepository fakeRecipesRepository;
     private FakeRecipeIngredientsRepository fakeRecipeIngredientsRepository;
+    private FakeIngredientsRepository fakeIngredientsRepository;
 
     @BeforeEach
     void setUp() {
         fakeRecipesRepository = new FakeRecipesRepository();
         fakeRecipeIngredientsRepository = new FakeRecipeIngredientsRepository();
-        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository);
+        fakeIngredientsRepository = new FakeIngredientsRepository();
+        adapter = new JpaRecipesAdapter(fakeRecipesRepository, fakeRecipeIngredientsRepository, fakeIngredientsRepository);
     }
 
     @Test
@@ -163,6 +166,8 @@ class JpaRecipesAdapterTests {
         String recipeId = "fake-recipe-id";
         String ingredientId = "fake-ingredient-id";
         String recipeIngredientId = "fake-recipe-ingredient-id";
+        IngredientEntity ingredientEntity = new IngredientEntity(ingredientId, "fake-device-id", "Riz", false, false);
+        fakeIngredientsRepository.ingredientToReturn = ingredientEntity;
 
         // When
         adapter.saveRecipeIngredient(recipeId, ingredientId, recipeIngredientId);
@@ -172,6 +177,21 @@ class JpaRecipesAdapterTests {
         assertEquals(recipeId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getRecipeId());
         assertEquals(ingredientId, fakeRecipeIngredientsRepository.savedRecipeIngredient.getIngredientId());
         assertFalse(fakeRecipeIngredientsRepository.savedRecipeIngredient.isBought());
+        assertSame(ingredientEntity, fakeRecipeIngredientsRepository.savedRecipeIngredient.getIngredient());
+    }
+
+    @Test
+    void shouldThrowWhenIngredientToSaveOnRecipeNotFound() {
+        // Given
+        String recipeId = "fake-recipe-id";
+        String ingredientId = "unknown-ingredient-id";
+        String recipeIngredientId = "fake-recipe-ingredient-id";
+
+        // Then
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> adapter.saveRecipeIngredient(recipeId, ingredientId, recipeIngredientId));
+        assertEquals("Ingredient not found with id: " + ingredientId, exception.getMessage());
+        assertNull(fakeRecipeIngredientsRepository.savedRecipeIngredient);
     }
 
     @Test
